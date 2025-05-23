@@ -1,0 +1,202 @@
+{
+  "title": "14.2: Reward Snapshots & Distribution (RocketRewardsPool)",
+  "id": "ZHfMzqb6oD2y8vHXrMHK2/rTPFfOTbBc+y/NtFKHjQw=",
+  "originalId": 2660,
+  "position": 92,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Follow each snippet to see exactly how `RocketRewardsPool` accepts a consensus snapshot from trusted nodes and then streams `RPL` / `ETH` to the distribution relays.",
+      "title": "",
+      "id": "31769"
+    },
+    {
+      "type": "highlight",
+      "description": "The public surface is tiny ‑ trusted nodes call `submitRewardSnapshot` to propose/agree, anyone can call `executeRewardSnapshot` once consensus is proven.",
+      "file": "contracts/interface/rewards/RocketRewardsPoolInterface.sol",
+      "highlight": [
+        {
+          "start": 19,
+          "end": 25
+        }
+      ],
+      "title": "",
+      "id": "31770"
+    },
+    {
+      "type": "highlight",
+      "description": "`getPendingRPLRewards` caps proposed `RPL` by adding the vault’s current balance to `RPL` inflation that would be minted right now.",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 48,
+          "end": 54
+        }
+      ],
+      "title": "",
+      "id": "31771"
+    },
+    {
+      "type": "highlight",
+      "description": "`getPendingETHRewards` simply exposes the live **ETH** balance held by the `Smoothing Pool`.",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 56,
+          "end": 60
+        }
+      ],
+      "title": "",
+      "id": "31772"
+    },
+    {
+      "type": "highlight",
+      "description": "**Interval bookkeeping** – a **DAO**-configurable period length (`70-74`) and the last start timestamp (`64-66`) let the contract derive how many full intervals have elapsed (`76-80`).",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 62,
+          "end": 80
+        }
+      ],
+      "title": "",
+      "id": "31773"
+    },
+    {
+      "type": "highlight",
+      "description": "`incrementRewardIndex` is private; the global `rewardIndex` only advances once consensus execution succeeds.",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 34,
+          "end": 37
+        }
+      ],
+      "title": "",
+      "id": "31774"
+    },
+    {
+      "type": "highlight",
+      "description": "`submitRewardSnapshot` begins with feature-flag & bounds checks (134-140) and ensures all per-network reward arrays share the same length (141-142).",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 131,
+          "end": 142
+        }
+      ],
+      "title": "",
+      "id": "31775"
+    },
+    {
+      "type": "highlight",
+      "description": "Total proposed **RPL** (144-151) and **ETH** (155-159) must stay within the pending-asset limits we saw earlier.",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 143,
+          "end": 160
+        }
+      ],
+      "title": "",
+      "id": "31776"
+    },
+    {
+      "type": "highlight",
+      "description": "**Duplicate-vote protection** is enforced with `per-node/per-submission keys` (165-168); `submissionCount` is then incremented and stored (171-175).",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 161,
+          "end": 175
+        }
+      ],
+      "title": "",
+      "id": "31777"
+    },
+    {
+      "type": "highlight",
+      "description": "When the submission targets the current `rewardIndex` and passes the quorum threshold (183-185) execution fires immediately.",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 176,
+          "end": 186
+        }
+      ],
+      "title": "",
+      "id": "31778"
+    },
+    {
+      "type": "highlight",
+      "description": "The external `executeRewardSnapshot` repeats the **quorum** check for callers outside the **voting path**, then defers to the same worker.",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 189,
+          "end": 201
+        }
+      ],
+      "title": "",
+      "id": "31779"
+    },
+    {
+      "type": "highlight",
+      "description": "`_executeRewardSnapshot` – step 1: mint `RPL` inflation (209) then increment the `rewardIndex` and roll interval timestamps forward (211-214) while emitting `RewardSnapshot`.",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 205,
+          "end": 214
+        }
+      ],
+      "title": "",
+      "id": "31780"
+    },
+    {
+      "type": "highlight",
+      "description": "**step 2**: send `treasuryRPL` to the `ClaimDAO` (220-222) and, if `userETH` exists, withdraw it from the `Smoothing Pool` into the `rETH buffer` (224-229).",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 218,
+          "end": 229
+        }
+      ],
+      "title": "",
+      "id": "31781"
+    },
+    {
+      "type": "highlight",
+      "description": "**step 3:** loop through each network \u000212resolve its relay address (`241-246`) \u000212move RPL from the vault (`249-252`) and ETH from the smoothing pool (`253-255`) \u000212finally call `relay.relayRewards` with the merkle root (`258-259`).",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 230,
+          "end": 259
+        }
+      ],
+      "title": "",
+      "id": "31782"
+    },
+    {
+      "type": "highlight",
+      "description": "**Events create an on-chain audit trail**: `RewardSnapshotSubmitted` on every vote, `RewardSnapshot` when assets move.",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 21,
+          "end": 24
+        }
+      ],
+      "title": "",
+      "id": "31783"
+    },
+    {
+      "type": "textOnly",
+      "description": "The relay contracts referenced above are implemented by `RocketMerkleDistributorMainnet` – that implementation is the focus of the next tour.",
+      "title": "",
+      "id": "31784"
+    }
+  ]
+}

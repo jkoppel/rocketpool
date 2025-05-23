@@ -1,0 +1,150 @@
+{
+  "title": "11.3: User Deposit & rETH Minting Flow",
+  "id": "KOzbq1USpSvHMJ0zgzsQ0qWMZZaQK0GjaZIyjV0eTgs=",
+  "originalId": 2645,
+  "position": 77,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "We will trace a fresh user deposit, following every contract call and balance change from `msg.value` to `rETH` in the wallet and ETH parked inside `RocketVault`.",
+      "title": "",
+      "id": "31533"
+    },
+    {
+      "type": "highlight",
+      "description": "`deposit()` is only executed if deposits are enabled and the user sends at least the DAO-configured minimum. Both settings live in the `RocketDAOProtocolSettingsDeposit` contract that the function loads at line 110.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 108,
+          "end": 113
+        }
+      ],
+      "title": "",
+      "id": "31534"
+    },
+    {
+      "type": "highlight",
+      "description": "The next guard protects the pool’s size. `capacityNeeded` adds this deposit to the current balance; it must fit inside `maximumDepositPoolSize`. If automatic assignment is enabled, the queue’s `effectiveCapacity` is also counted, letting the pool swell only when those ETH are about to fund validators.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 123,
+          "end": 139
+        }
+      ],
+      "title": "",
+      "id": "31535"
+    },
+    {
+      "type": "highlight",
+      "description": "A protocol-wide `depositFee` (basis-points in the same settings contract) is subtracted. The net amount is forwarded to `rocketTokenRETH.mint()`, creating the user’s `rETH`.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 141,
+          "end": 146
+        }
+      ],
+      "title": "",
+      "id": "31536"
+    },
+    {
+      "type": "highlight",
+      "description": "`mint()` can only be called by the most recent `RocketDepositPool` instance (see the modifier). It converts the supplied ETH value into rETH using the live exchange rate and then `_mint()`s to `_to`.",
+      "file": "contracts/contract/token/RocketTokenRETH.sol",
+      "highlight": [
+        {
+          "start": 92,
+          "end": 99
+        }
+      ],
+      "title": "",
+      "id": "31537"
+    },
+    {
+      "type": "highlight",
+      "description": "The contract declares the `DepositReceived` event so that every successful deposit is observable on-chain by indexers and auditors.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 36,
+          "end": 38
+        }
+      ],
+      "title": "",
+      "id": "31538"
+    },
+    {
+      "type": "highlight",
+      "description": "Immediately after minting, the event is emitted and control moves into `processDeposit()` for the ETH routing logic.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 147,
+          "end": 150
+        }
+      ],
+      "title": "",
+      "id": "31539"
+    },
+    {
+      "type": "highlight",
+      "description": "`processDeposit()` decides how to split `msg.value`. `toReth` equals the current collateral shortfall (capped at `msg.value`); anything left becomes `toVault`.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 213,
+          "end": 218
+        }
+      ],
+      "title": "",
+      "id": "31540"
+    },
+    {
+      "type": "highlight",
+      "description": "The split is executed:\n- `toReth` is sent to `rocketTokenRETH.depositExcess()`, immediately boosting rETH's on-chain collateral.\n- `toVault` is deposited into RocketVault under the key `\"rocketDepositPool\"`, ready to fund validators.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 219,
+          "end": 224
+        }
+      ],
+      "title": "",
+      "id": "31541"
+    },
+    {
+      "type": "highlight",
+      "description": "`getRethCollateralShortfall()` compares the current collateral balance (line 236) with the target collateral rate set in `RocketDAOProtocolSettingsNetwork` (line 235), returning exactly how much ETH must top-up the buffer.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 230,
+          "end": 238
+        }
+      ],
+      "title": "",
+      "id": "31542"
+    },
+    {
+      "type": "highlight",
+      "description": "Finally `_assignByDeposit()` may stream part of the vault balance into waiting minipools or megapools – your ETH might immediately leave the vault, or it might wait for the next assignment cycle.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 225,
+          "end": 227
+        }
+      ],
+      "title": "",
+      "id": "31543"
+    },
+    {
+      "type": "textOnly",
+      "description": "Recap: User ➜ `deposit()` (guards, fee) ➜ `rETH` minted ➜ `processDeposit()` splits ETH between `rETH` collateral and `RocketVault` ➜ optional `_assignByDeposit()` pushes ETH to validators.  The entire path is now transparent for auditors.",
+      "title": "",
+      "id": "31544"
+    }
+  ]
+}

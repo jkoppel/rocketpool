@@ -1,0 +1,163 @@
+{
+  "title": "4.3: Proposal Lifecycle – Create, Vote, Execute",
+  "id": "By2CaX5M7l7MEA4K309ES8I1W2Be32xoLoD4mPkW9FE=",
+  "originalId": 2578,
+  "position": 13,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Follow a single proposal as it travels through the `Protocol DAO contract`, from creation all the way to execution.",
+      "title": "",
+      "id": "30729"
+    },
+    {
+      "type": "highlight",
+      "description": "`propose()` is publicly callable by any registered node.  Lines 42-44 guard that on-chain governance was enabled by the **temporary guardian**.  The next loop (46-50) turns the **Merkle-Pollard snapshot** into a flat `totalVotingPower` figure.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 39,
+          "end": 50
+        }
+      ],
+      "title": "",
+      "id": "30730"
+    },
+    {
+      "type": "highlight",
+      "description": "The helper `_propose()` is invoked (52).  Immediately afterwards the pollard root is forwarded to the `Verifier` (54-55) so the snapshot can be challenged later if it was incorrect.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 51,
+          "end": 55
+        }
+      ],
+      "title": "",
+      "id": "30731"
+    },
+    {
+      "type": "highlight",
+      "description": "Inside `_propose()` the contract converts global percentages into concrete thresholds. It pulls the quorum constants from the `settings` module, then scales them by `totalVotingPower` to obtain both `quorum` and `vetoQuorum`.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 358,
+          "end": 372
+        }
+      ],
+      "title": "",
+      "id": "30732"
+    },
+    {
+      "type": "highlight",
+      "description": "Still in `_propose()`, vote-timing parameters are fetched and everything ‑- including the two quorums just calculated ‑- is passed to `_addProposal()`.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 374,
+          "end": 385
+        }
+      ],
+      "title": "",
+      "id": "30733"
+    },
+    {
+      "type": "highlight",
+      "description": "`_addProposal()` persists every field in `RocketStorage`: `proposer`, `human message`, `phase windows`, `required votes`, `payload`, `snapshot block` and `veto quota`.  It also bumps the global proposal counter and emits the `ProposalAdded` event.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 389,
+          "end": 413
+        }
+      ],
+      "title": "",
+      "id": "30734"
+    },
+    {
+      "type": "highlight",
+      "description": "Phase 1 voting arrives through `vote()`.  After enforcing the `state` (69) and verifying the proof of voting power via the `Verifier` (71-72), control passes to `_vote()` with the `phase1` flag set.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 65,
+          "end": 75
+        }
+      ],
+      "title": "",
+      "id": "30735"
+    },
+    {
+      "type": "highlight",
+      "description": "`_vote()` records the choice.  It updates the relevant tallies, writes a receipt, marks phase1 participation if relevant, and emits a `ProposalVoted` event.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 442,
+          "end": 466
+        }
+      ],
+      "title": "",
+      "id": "30736"
+    },
+    {
+      "type": "highlight",
+      "description": "When Phase 2 opens, a node can override its delegate via `overrideVote()`.  It loads the caller’s power at the snapshot, reverses the delegate’s earlier weight if necessary, then applies the caller’s own preference with another `_vote()`.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 80,
+          "end": 101
+        }
+      ],
+      "title": "",
+      "id": "30737"
+    },
+    {
+      "type": "highlight",
+      "description": "`_overrideVote()` simply subtracts the delegate’s weight from every bucket it had touched and shrinks their receipt so totals stay consistent.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 421,
+          "end": 438
+        }
+      ],
+      "title": "",
+      "id": "30738"
+    },
+    {
+      "type": "highlight",
+      "description": "Once the state machine reports `Succeeded`, anyone can call `execute()`. The proposal is marked **executed** (124) and its raw payload gets forwarded to the dedicated execution contract (126-128). A revert propagates the original reason thanks to `getRevertMsg()`.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 120,
+          "end": 130
+        }
+      ],
+      "title": "",
+      "id": "30739"
+    },
+    {
+      "type": "highlight",
+      "description": "`getRevertMsg()` decodes standard `Error(string)` data so users see a readable revert reason instead of opaque bytes.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 133,
+          "end": 141
+        }
+      ],
+      "title": "",
+      "id": "30740"
+    },
+    {
+      "type": "textOnly",
+      "description": "A `calldata payload` therefore progresses from an idea, to `immutable storage`, through two **voting phases**, and finally becomes a **live protocol action**.",
+      "title": "",
+      "id": "30741"
+    }
+  ]
+}

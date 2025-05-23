@@ -1,0 +1,228 @@
+{
+  "title": "2.4: RocketVault – Funds Custody",
+  "id": "MWwh3u7vyjQgq8jgB3GMGSQooJ2ltYuOanZ3u+9R1Gs=",
+  "originalId": 2571,
+  "position": 5,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "`RocketVault` is the single place that actually custodies every `ETH` and `ERC-20`. Other modules only hold an entry in its ledger, so upgrades anywhere else can’t touch real assets.",
+      "title": "",
+      "id": "30711"
+    },
+    {
+      "type": "highlight",
+      "description": "The header comment spells out the **invariant**: this `contract` must never be upgraded, isolating balances from later code changes.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 12,
+          "end": 15
+        }
+      ],
+      "title": "",
+      "id": "30712"
+    },
+    {
+      "type": "highlight",
+      "description": "Internal ledger: one mapping per asset type — `etherBalances[name]` for ETH and `tokenBalances[keccak256(name, token)]` for ERC-20.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 21,
+          "end": 24
+        }
+      ],
+      "title": "",
+      "id": "30713"
+    },
+    {
+      "type": "highlight",
+      "description": "The constructor stores the storage pointer and fixes `version = 1`, reinforcing that this deployment is permanent.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 33,
+          "end": 36
+        }
+      ],
+      "title": "",
+      "id": "30714"
+    },
+    {
+      "type": "highlight",
+      "description": "`balanceOf` exposes the ETH balance for any network module via its registered name.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 38,
+          "end": 42
+        }
+      ],
+      "title": "",
+      "id": "30715"
+    },
+    {
+      "type": "highlight",
+      "description": "`balanceOfToken` does the same for tokens by hashing the (name, token address) pair.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 44,
+          "end": 48
+        }
+      ],
+      "title": "",
+      "id": "30716"
+    },
+    {
+      "type": "highlight",
+      "description": "`depositEther` is gated by `onlyLatestNetworkContract`, validates the amount, and discovers the caller’s name.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 50,
+          "end": 57
+        }
+      ],
+      "title": "",
+      "id": "30717"
+    },
+    {
+      "type": "highlight",
+      "description": "The ledger is incremented with `SafeMath`’s `add` and the `EtherDeposited` event is emitted.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 58,
+          "end": 61
+        }
+      ],
+      "title": "",
+      "id": "30718"
+    },
+    {
+      "type": "highlight",
+      "description": "`withdrawEther` checks the caller’s balance and performs a SafeMath `sub`, preventing overdrafts.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 65,
+          "end": 72
+        }
+      ],
+      "title": "",
+      "id": "30719"
+    },
+    {
+      "type": "highlight",
+      "description": "**ETH** is then forwarded to the caller’s own `receiveVaultWithdrawalETH` after state changes, implementing a pull-based pattern that blocks re-entrancy.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 73,
+          "end": 77
+        }
+      ],
+      "title": "",
+      "id": "30720"
+    },
+    {
+      "type": "highlight",
+      "description": "`depositToken` uses a single `transferFrom` directly into the vault, avoiding an extra hop through the caller and saving gas.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 80,
+          "end": 88
+        }
+      ],
+      "title": "",
+      "id": "30721"
+    },
+    {
+      "type": "highlight",
+      "description": "It records the deposit in `tokenBalances` and fires `TokenDeposited`.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 89,
+          "end": 93
+        }
+      ],
+      "title": "",
+      "id": "30722"
+    },
+    {
+      "type": "highlight",
+      "description": "`withdrawToken` mirrors the **ETH** flow, first subtracting from the caller’s ledger entry.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 98,
+          "end": 104
+        }
+      ],
+      "title": "",
+      "id": "30723"
+    },
+    {
+      "type": "highlight",
+      "description": "The vault then executes the ERC-20 `transfer` to the requested address and logs `TokenWithdrawn`.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 105,
+          "end": 110
+        }
+      ],
+      "title": "",
+      "id": "30724"
+    },
+    {
+      "type": "highlight",
+      "description": "`transferToken` never moves real tokens — it just shifts numbers between two ledger keys, keeping all value inside the vault.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 115,
+          "end": 125
+        }
+      ],
+      "title": "",
+      "id": "30725"
+    },
+    {
+      "type": "highlight",
+      "description": "`TokenTransfer` makes the internal move transparent for off-chain indexers.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 126,
+          "end": 127
+        }
+      ],
+      "title": "",
+      "id": "30726"
+    },
+    {
+      "type": "highlight",
+      "description": "`burnToken` reduces the balance and calls the token’s own `burn`, permanently removing the tokens before emitting `TokenBurned`.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 130,
+          "end": 143
+        }
+      ],
+      "title": "",
+      "id": "30727"
+    },
+    {
+      "type": "textOnly",
+      "description": "Because every entry point is protected by `onlyLatestNetworkContract`, only registered modules can move funds. By centralising custody in this immutable vault and keeping per-module balances in the two mappings, `RocketPool` ensures upgrades elsewhere can’t endanger real ETH or ERC-20, and every movement can be traced through the events you’ve just seen.",
+      "title": "",
+      "id": "30728"
+    }
+  ]
+}

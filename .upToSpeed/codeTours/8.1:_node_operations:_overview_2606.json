@@ -1,0 +1,104 @@
+{
+  "title": "8.1: Node Operations: Overview",
+  "id": "y/nkLmAh//GYdFaT168EnzgMXfMBZ1PwH/OYGskS+Sw=",
+  "originalId": 2606,
+  "position": 38,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "This tour starts in the `contracts/contract/node` directory, which holds every file in the Node Operations component: identity, staking, ETH bonding, and legacy fee distribution. We’ll also point out the shared **NodeDetails struct** outside this folder and the matching **interfaces** under `contracts/interface/node`.",
+      "title": "",
+      "id": "31114"
+    },
+    {
+      "type": "textOnly",
+      "description": "Inside `contracts/contract/node` you find:\n\n- `RocketNodeManager.sol`\n- `RocketNodeStaking.sol`\n- `RocketNodeDeposit.sol`\n- `RocketNodeDistributor.sol` & `RocketNodeDistributorDelegate.sol`\n- `RocketNodeDistributorFactory.sol`\n- `RocketNodeDistributorStorageLayout.sol`\n\nNote: `contracts/types/NodeDetails.sol` contains **shared metadata struct**.",
+      "title": "",
+      "id": "31115"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketNodeManager` is declared at line 29. Its **constructor** (lines 41–43) sets `version = 4` via `RocketBase`, making this contract the central hub for node‐operator identity and permissions.",
+      "file": "contracts/contract/node/RocketNodeManager.sol",
+      "highlight": [
+        {
+          "start": 28,
+          "end": 43
+        }
+      ],
+      "title": "",
+      "id": "31116"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketNodeStaking` owns the `RPL` bond logic. The immutable block (lines 24–29) stores key hashes and contract addresses (`totalKey`, `totalMegapoolKey`, `rplToken`, `rocketVault`) for staking operations.",
+      "file": "contracts/contract/node/RocketNodeStaking.sol",
+      "highlight": [
+        {
+          "start": 24,
+          "end": 29
+        }
+      ],
+      "title": "",
+      "id": "31117"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketNodeDeposit.deposit()` at line 136 is the external ETH‐bond entry point. Calling this function forwards a node’s bond and validator data into the system.",
+      "file": "contracts/contract/node/RocketNodeDeposit.sol",
+      "highlight": [
+        {
+          "start": 136,
+          "end": 141
+        }
+      ],
+      "title": "",
+      "id": "31118"
+    },
+    {
+      "type": "highlight",
+      "description": "The factory for legacy fee distributors. `createProxy()` (line 34) uses `CREATE2` to deploy a per-node distributor proxy for older reward flows.",
+      "file": "contracts/contract/node/RocketNodeDistributorFactory.sol",
+      "highlight": [
+        {
+          "start": 33,
+          "end": 38
+        }
+      ],
+      "title": "",
+      "id": "31119"
+    },
+    {
+      "type": "highlight",
+      "description": "`NodeDetails` **struct** (lines 7–13) bundles every piece of on-chain metadata about a node into one object for read-only callers.",
+      "file": "contracts/types/NodeDetails.sol",
+      "highlight": [
+        {
+          "start": 7,
+          "end": 13
+        }
+      ],
+      "title": "",
+      "id": "31120"
+    },
+    {
+      "type": "highlight",
+      "description": "Each **Node-Operations** contract has a matching interface under `contracts/interface/node`. Here’s `RocketNodeManagerInterface` mirroring all the public functions and structs.",
+      "file": "contracts/interface/node/RocketNodeManagerInterface.sol",
+      "highlight": [
+        {
+          "start": 7,
+          "end": 15
+        }
+      ],
+      "title": "",
+      "id": "31121"
+    },
+    {
+      "type": "textOnly",
+      "description": "You now know every file that makes up the Node Operations component and the broad responsibility of each. Next, we’ll dive deeper into how they interact.",
+      "title": "",
+      "id": "31122"
+    }
+  ]
+}

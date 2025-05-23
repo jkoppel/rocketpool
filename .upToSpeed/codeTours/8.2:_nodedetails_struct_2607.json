@@ -1,0 +1,137 @@
+{
+  "title": "8.2: NodeDetails struct",
+  "id": "x4Gj475uHN3bjj3vj4o2hw66EqEIcqjZqxCwMM/NQFE=",
+  "originalId": 2607,
+  "position": 39,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "The tour opens `NodeDetails`, then traces every field to a real read-or-write so you can see exactly where the data comes from.",
+      "title": "",
+      "id": "31357"
+    },
+    {
+      "type": "highlight",
+      "description": "Here is the `struct` we will keep referring to – twenty-five members that summarise one node operator.",
+      "file": "contracts/types/NodeDetails.sol",
+      "highlight": [
+        {
+          "start": 7,
+          "end": 33
+        }
+      ],
+      "title": "",
+      "id": "31358"
+    },
+    {
+      "type": "highlight",
+      "description": "`getNodeDetails` opens with identity and registration facts: line 399 copies `nodeAddress`; 400–401 fetch the current and pending withdrawal routes; 402-404 set `exists`, `registrationTime`, and the human–readable `timezoneLocation`.",
+      "file": "old/contracts/contract/node/RocketNodeManager.sol",
+      "highlight": [
+        {
+          "start": 399,
+          "end": 404
+        }
+      ],
+      "title": "",
+      "id": "31359"
+    },
+    {
+      "type": "highlight",
+      "description": "Two configuration flags follow – whether the fee distributor proxy is live (`feeDistributorInitialised`) and which L2 or side-network the operator wants rewards on (`rewardNetwork`).",
+      "file": "old/contracts/contract/node/RocketNodeManager.sol",
+      "highlight": [
+        {
+          "start": 405,
+          "end": 406
+        }
+      ],
+      "title": "",
+      "id": "31360"
+    },
+    {
+      "type": "highlight",
+      "description": "Collateral numbers arrive from `RocketNodeStaking` in one burst: raw `rplStake`, its `effective` value, per-minipool `minimum` and `maximum` stakes, plus user-ETH utilisation figures `ethMatched` and `ethMatchedLimit`.",
+      "file": "old/contracts/contract/node/RocketNodeManager.sol",
+      "highlight": [
+        {
+          "start": 408,
+          "end": 413
+        }
+      ],
+      "title": "",
+      "id": "31361"
+    },
+    {
+      "type": "highlight",
+      "description": "The next block records fee-sharing: the proxy’s address, the node’s own ETH share, and by subtraction the delegator share – filling `feeDistributorAddress`, `distributorBalanceNodeETH`, and `distributorBalanceUserETH`.",
+      "file": "old/contracts/contract/node/RocketNodeManager.sol",
+      "highlight": [
+        {
+          "start": 415,
+          "end": 419
+        }
+      ],
+      "title": "",
+      "id": "31362"
+    },
+    {
+      "type": "highlight",
+      "description": "`minipoolCount` is simply the tally returned by the `MinipoolManager`.",
+      "file": "old/contracts/contract/node/RocketNodeManager.sol",
+      "highlight": [
+        {
+          "start": 421,
+          "end": 421
+        }
+      ],
+      "title": "",
+      "id": "31363"
+    },
+    {
+      "type": "highlight",
+      "description": "Finally the function snapshots liquid holdings – native **ETH**, **rETH**, new and old **RPL** – and any `depositCreditBalance` the node still owns.",
+      "file": "old/contracts/contract/node/RocketNodeManager.sol",
+      "highlight": [
+        {
+          "start": 423,
+          "end": 427
+        }
+      ],
+      "title": "",
+      "id": "31364"
+    },
+    {
+      "type": "highlight",
+      "description": "Toggling the smoothing-pool option writes two storage keys that back the last pair of struct members: `smoothingPoolRegistrationChanged` (`timestamp`) and `smoothingPoolRegistrationState` (`bool`).",
+      "file": "contracts/contract/node/RocketNodeManager.sol",
+      "highlight": [
+        {
+          "start": 355,
+          "end": 367
+        }
+      ],
+      "title": "",
+      "id": "31365"
+    },
+    {
+      "type": "highlight",
+      "description": "The companion getters read those keys; if future code wanted the same data inside `NodeDetails`, this is where it would come from.",
+      "file": "contracts/contract/node/RocketNodeManager.sol",
+      "highlight": [
+        {
+          "start": 373,
+          "end": 379
+        }
+      ],
+      "title": "",
+      "id": "31366"
+    },
+    {
+      "type": "textOnly",
+      "description": "You will meet this struct again whenever later helpers call `getNodeDetails` – the same twenty-five fields travel across many contracts.",
+      "title": "",
+      "id": "31367"
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "title": "2.3: RocketBase Utility Layer",
+  "id": "9tJG7PgXXuiW+DqMUVFXzIMPXXuQSW7BW44RIoVwegs=",
+  "originalId": 2581,
+  "position": 4,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Each `Rocket Pool` logic module inherits `RocketBase` — a minimalist contract whose sole job is to expose shared storage and permission helpers. Follow these twelve short stops to see how it works.",
+      "title": "",
+      "id": "30801"
+    },
+    {
+      "type": "highlight",
+      "description": "RocketBase keeps no state except `calcBase` (line 13) and the `rocketStorage` pointer (18-21); every persistent read or write flows through that single address.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 10,
+          "end": 21
+        }
+      ],
+      "title": "",
+      "id": "30802"
+    },
+    {
+      "type": "highlight",
+      "description": "The `constructor` receives a `RocketStorage` address once during deployment and caches it so that any upgraded implementation keeps talking to the same storage.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 96,
+          "end": 100
+        }
+      ],
+      "title": "",
+      "id": "30803"
+    },
+    {
+      "type": "textOnly",
+      "description": "Access control is enforced by a family of storage-driven modifiers.",
+      "title": "",
+      "id": "30804"
+    },
+    {
+      "type": "highlight",
+      "description": "`onlyLatestNetworkContract` lets calls through only when `msg.sender` is still flagged **exists = true** under `contract.exists`.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 24,
+          "end": 30
+        }
+      ],
+      "title": "",
+      "id": "30805"
+    },
+    {
+      "type": "highlight",
+      "description": "**onlyLatestContract** checks that the supplied address matches the one stored under `keccak(\"contract.address\", name)` — guaranteeing the newest version.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 33,
+          "end": 38
+        }
+      ],
+      "title": "",
+      "id": "30806"
+    },
+    {
+      "type": "highlight",
+      "description": "`onlyRegisteredNode` / `Minipool` / `Megapool` gate calls by looking up booleans under `node.exists`, `minipool.exists`, and `megapool.exists`; line 75 combines the latter two.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 41,
+          "end": 80
+        }
+      ],
+      "title": "",
+      "id": "30807"
+    },
+    {
+      "type": "highlight",
+      "description": "`onlyGuardian` grants temporary power to the guardian address held in storage until the DAO is fully active.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 84,
+          "end": 89
+        }
+      ],
+      "title": "",
+      "id": "30808"
+    },
+    {
+      "type": "highlight",
+      "description": "`getContractAddress` assembles the same `contract.address` key, fetches it via `getAddress`, and reverts if no record exists.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 104,
+          "end": 111
+        }
+      ],
+      "title": "",
+      "id": "30809"
+    },
+    {
+      "type": "highlight",
+      "description": "`getContractName` performs the reverse lookup: given an address it retrieves the name stored under `contract.name`, reverting on absence.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 124,
+          "end": 131
+        }
+      ],
+      "title": "",
+      "id": "30810"
+    },
+    {
+      "type": "highlight",
+      "description": "`getRevertMsg` unwraps the revert string from a failed low-level `.call` so other modules don’t need to repeat the assembly snippet.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 133,
+          "end": 142
+        }
+      ],
+      "title": "",
+      "id": "30811"
+    },
+    {
+      "type": "highlight",
+      "description": "These thin wrappers forward `get`/`set`/`delete`/`arithmetic` calls to `RocketStorage`; downstream modules invoke them instead of talking to storage directly, keeping their bytecode lean while sharing the same permission checks.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 150,
+          "end": 179
+        }
+      ],
+      "title": "",
+      "id": "30812"
+    }
+  ]
+}

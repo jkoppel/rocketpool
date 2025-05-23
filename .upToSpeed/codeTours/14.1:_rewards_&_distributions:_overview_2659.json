@@ -1,0 +1,111 @@
+{
+  "title": "14.1: Rewards & Distributions: Overview",
+  "id": "THtTNCK0bKXios8b/wG7P1nlliZhJ7Q+hnfWGVNoUYE=",
+  "originalId": 2659,
+  "position": 91,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Everything about rewards lives in `contracts/contract/rewards`. We will inspect the five implementation contracts that work together and learn the struct and interface they share.",
+      "title": "",
+      "id": "31713"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketRewardsPool` is the decision-maker – it closes a reward interval and calculates exactly how much `RPL` and `ETH` leave the system for that period.",
+      "file": "contracts/contract/rewards/RocketRewardsPool.sol",
+      "highlight": [
+        {
+          "start": 18,
+          "end": 24
+        }
+      ],
+      "title": "",
+      "id": "31714"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketSmoothingPool` is a simple **ETH** piggy-bank; it passively receives execution-layer priority fees & MEV via the network’s `fee_recipient`.",
+      "file": "contracts/contract/rewards/RocketSmoothingPool.sol",
+      "highlight": [
+        {
+          "start": 10,
+          "end": 17
+        }
+      ],
+      "title": "",
+      "id": "31715"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketMerkleDistributorMainnet` takes each snapshot’s Merkle root from the pool and later lets **node operators** **prove-and-claim** their slice.",
+      "file": "contracts/contract/rewards/RocketMerkleDistributorMainnet.sol",
+      "highlight": [
+        {
+          "start": 14,
+          "end": 18
+        }
+      ],
+      "title": "",
+      "id": "31716"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketClaimDAO` is the protocol `DAO`’s outbox – the treasury’s `RPL` arrives here and this `contract` pays recurring invoices on-chain.",
+      "file": "contracts/contract/rewards/RocketClaimDAO.sol",
+      "highlight": [
+        {
+          "start": 10,
+          "end": 12
+        }
+      ],
+      "title": "",
+      "id": "31717"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketVoterRewards` is a temporary parking lot that will hold voters’ share of ETH rewards until the final distribution mechanism is ready.",
+      "file": "contracts/contract/rewards/RocketVoterRewards.sol",
+      "highlight": [
+        {
+          "start": 9,
+          "end": 12
+        }
+      ],
+      "title": "",
+      "id": "31718"
+    },
+    {
+      "type": "highlight",
+      "description": "Every reward interval is summarised by the `RewardSubmission` struct. Focus on the `index` & `block` fields (when), the `Merkle` data (who), and the **per-group payout arrays** that spell out how much goes where.",
+      "file": "contracts/types/RewardSubmission.sol",
+      "highlight": [
+        {
+          "start": 5,
+          "end": 17
+        }
+      ],
+      "title": "",
+      "id": "31719"
+    },
+    {
+      "type": "highlight",
+      "description": "This public interface is what other contracts, oracles and UIs see: many view helpers plus two mutators – `submitRewardSnapshot` and `executeRewardSnapshot` – that close an interval and trigger distribution.",
+      "file": "contracts/interface/rewards/RocketRewardsPoolInterface.sol",
+      "highlight": [
+        {
+          "start": 8,
+          "end": 25
+        }
+      ],
+      "title": "",
+      "id": "31720"
+    },
+    {
+      "type": "textOnly",
+      "description": "That is the map. In later walkthroughs we will dive into each contract and follow a reward from snapshot submission through to every final recipient.",
+      "title": "",
+      "id": "31721"
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "title": "10.1: Megapool Validators: Overview",
+  "id": "y96CLgLxN10TQlHtMM/ezagR6QTFc7jE82WJbny+ymA=",
+  "originalId": 2633,
+  "position": 65,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "A short tour so you can point at each **Megapool** contract and say what it does – no inner logic, only the roles each `file` plays.",
+      "title": "",
+      "id": "31384"
+    },
+    {
+      "type": "highlight",
+      "description": "The first contract announces the **golden rule**: every Megapool‐related contract sticks to exactly the same storage layout; upgrades must only append new slots.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 6,
+          "end": 10
+        }
+      ],
+      "title": "",
+      "id": "31385"
+    },
+    {
+      "type": "highlight",
+      "description": "`ValidatorInfo` begins here.  Seeing it early matters because every other Megapool contract reads and writes these fields.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 23,
+          "end": 30
+        }
+      ],
+      "title": "",
+      "id": "31386"
+    },
+    {
+      "type": "highlight",
+      "description": "The proxy keeps two immutables and its own address; the constructor just stores them – signalling a **minimal, transparent proxy**.",
+      "file": "contracts/contract/megapool/RocketMegapoolProxy.sol",
+      "highlight": [
+        {
+          "start": 17,
+          "end": 25
+        }
+      ],
+      "title": "",
+      "id": "31387"
+    },
+    {
+      "type": "highlight",
+      "description": "`initialise()` is called once by the factory: it memorises the node operator and captures the first delegate implementation.",
+      "file": "contracts/contract/megapool/RocketMegapoolProxy.sol",
+      "highlight": [
+        {
+          "start": 41,
+          "end": 54
+        }
+      ],
+      "title": "",
+      "id": "31388"
+    },
+    {
+      "type": "highlight",
+      "description": "All other messages reach this fallback which `delegatecall-s` to the chosen implementation – **classic transparent-proxy forwarding**.",
+      "file": "contracts/contract/megapool/RocketMegapoolProxy.sol",
+      "highlight": [
+        {
+          "start": 62,
+          "end": 75
+        }
+      ],
+      "title": "",
+      "id": "31389"
+    },
+    {
+      "type": "highlight",
+      "description": "**Header**, **constants** and a long **events list** reveal that `this file` is where the real **Megapool** behaviour lives.",
+      "file": "contracts/contract/megapool/RocketMegapoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 17,
+          "end": 41
+        }
+      ],
+      "title": "",
+      "id": "31390"
+    },
+    {
+      "type": "highlight",
+      "description": "`getExpectedAddress()` shows deterministic address calculation (`CREATE2` clones) – the factory can predict where a proxy will appear before deploying it.",
+      "file": "contracts/contract/megapool/RocketMegapoolFactory.sol",
+      "highlight": [
+        {
+          "start": 42,
+          "end": 51
+        }
+      ],
+      "title": "",
+      "id": "31391"
+    },
+    {
+      "type": "highlight",
+      "description": "`deployContract()` performs the `cloneDeterministic()`, runs `initialise` on the new proxy and records that it now exists.",
+      "file": "contracts/contract/megapool/RocketMegapoolFactory.sol",
+      "highlight": [
+        {
+          "start": 60,
+          "end": 77
+        }
+      ],
+      "title": "",
+      "id": "31392"
+    },
+    {
+      "type": "highlight",
+      "description": "`_upgradeDelegate()` is the private work-horse that rolls a new delegate out and flags older ones for expiry – upgrades are coordinated here.",
+      "file": "contracts/contract/megapool/RocketMegapoolFactory.sol",
+      "highlight": [
+        {
+          "start": 103,
+          "end": 106
+        }
+      ],
+      "title": "",
+      "id": "31393"
+    },
+    {
+      "type": "highlight",
+      "description": "`getValidatorCount()` and `addValidator()` expose the **Manager**’s simple job: maintain a global registry of every validator across all Megapools.",
+      "file": "contracts/contract/megapool/RocketMegapoolManager.sol",
+      "highlight": [
+        {
+          "start": 17,
+          "end": 30
+        }
+      ],
+      "title": "",
+      "id": "31394"
+    },
+    {
+      "type": "highlight",
+      "description": "The header spells out **MEV-theft** penalties and `penalise()` is the `oDAO`’s entry point for enforcing them.",
+      "file": "contracts/contract/megapool/RocketMegapoolPenalties.sol",
+      "highlight": [
+        {
+          "start": 12,
+          "end": 36
+        }
+      ],
+      "title": "",
+      "id": "31395"
+    },
+    {
+      "type": "textOnly",
+      "description": "You can now match each filename to its responsibility:\n- `RocketMegapoolStorageLayout` – shared state layout\n- `RocketMegapoolProxy` – thin forwarder owned by a node\n- `RocketMegapoolDelegate` – heavy Megapool logic\n- `RocketMegapoolFactory` – deterministic deployment and upgrades\n- `RocketMegapoolManager` – global validator registry\n- `RocketMegapoolPenalties` – MEV-theft enforcement",
+      "title": "",
+      "id": "31396"
+    }
+  ]
+}

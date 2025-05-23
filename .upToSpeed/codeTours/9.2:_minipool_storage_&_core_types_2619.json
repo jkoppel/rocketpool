@@ -1,0 +1,263 @@
+{
+  "title": "9.2: Minipool Storage & Core Types",
+  "id": "ARtevUYdwFeRrc/fn6kht9hgJAc2B/qW7RZsmVIEj9k=",
+  "originalId": 2619,
+  "position": 51,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Each `minipool contract` keeps a fixed-layout record of everything that can ever happen to it. This tour walks through those **storage slots**, the **enums** that label them, and the `view helpers` that expose them.",
+      "title": "",
+      "id": "31288"
+    },
+    {
+      "type": "highlight",
+      "description": "The first group records lifecycle progress.  `status` is the current phase, while `statusBlock` & `statusTime` timestamp the transition.  `withdrawalBlock` acts as a short-term re-entrancy throttle for withdrawals.",
+      "file": "contracts/contract/minipool/RocketMinipoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 28,
+          "end": 33
+        }
+      ],
+      "title": "",
+      "id": "31289"
+    },
+    {
+      "type": "highlight",
+      "description": "`depositType` links the pool to one of the funding models in the `MinipoolDeposit` enum.",
+      "file": "contracts/contract/minipool/RocketMinipoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 35,
+          "end": 35
+        }
+      ],
+      "title": "",
+      "id": "31290"
+    },
+    {
+      "type": "highlight",
+      "description": "Node-side fields: the operator’s address, their commission (`nodeFee`), the ETH they posted, plus two moving balances – refundable surplus (`nodeRefundBalance`) and any pending slash (`nodeSlashBalance`).",
+      "file": "contracts/contract/minipool/RocketMinipoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 38,
+          "end": 44
+        }
+      ],
+      "title": "",
+      "id": "31291"
+    },
+    {
+      "type": "highlight",
+      "description": "User-side bookkeeping. Legacy pools still read `userDepositBalanceLegacy`; the universal timestamp `userDepositAssignedTime` marks when user ETH became locked to this pool.",
+      "file": "contracts/contract/minipool/RocketMinipoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 46,
+          "end": 48
+        }
+      ],
+      "title": "",
+      "id": "31292"
+    },
+    {
+      "type": "highlight",
+      "description": "Operational flags: upgrade pointers, cached contract addresses, a storage-initialisation guard, and `finalised`. Once `_finalise()` sets `finalised = true` the pool stops accepting balance-changing calls.",
+      "file": "contracts/contract/minipool/RocketMinipoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 50,
+          "end": 65
+        }
+      ],
+      "title": "",
+      "id": "31293"
+    },
+    {
+      "type": "highlight",
+      "description": "Trusted members can vote to *scrub* a faulty validator. Each vote is stored in `memberScrubVotes`; `totalScrubVotes` lets quorum checks run in O(1).",
+      "file": "contracts/contract/minipool/RocketMinipoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 66,
+          "end": 69
+        }
+      ],
+      "title": "",
+      "id": "31294"
+    },
+    {
+      "type": "highlight",
+      "description": "Variable-deposit and migration workflows add `preLaunchValue`, live `userDepositBalance`, the `vacant` flag, and `preMigrationBalance` (the validator’s on-chain balance before Rocket Pool takes control).",
+      "file": "contracts/contract/minipool/RocketMinipoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 70,
+          "end": 77
+        }
+      ],
+      "title": "",
+      "id": "31295"
+    },
+    {
+      "type": "highlight",
+      "description": "`userDistributed` flips when *anyone* (usually a user) forces distribution.  `userDistributeTime` records the start of the mandatory cool-down window before users may call it.",
+      "file": "contracts/contract/minipool/RocketMinipoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 79,
+          "end": 81
+        }
+      ],
+      "title": "",
+      "id": "31296"
+    },
+    {
+      "type": "highlight",
+      "description": "`MinipoolStatus` defines the five legal phases. Every public guard we will see below keys off this **enum**.",
+      "file": "contracts/types/MinipoolStatus.sol",
+      "highlight": [
+        {
+          "start": 7,
+          "end": 13
+        }
+      ],
+      "title": "",
+      "id": "31297"
+    },
+    {
+      "type": "highlight",
+      "description": "`setStatus` is the only writer: it stores the new status, stamps the block & time, and emits an event — ensuring on-chain and off-chain views stay in sync.",
+      "file": "contracts/contract/minipool/RocketMinipoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 674,
+          "end": 680
+        }
+      ],
+      "title": "",
+      "id": "31298"
+    },
+    {
+      "type": "highlight",
+      "description": "Example guard: the node may call `stake()` only while the pool is `Prelaunch` *and* after the scrub period has elapsed.",
+      "file": "contracts/contract/minipool/RocketMinipoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 257,
+          "end": 263
+        }
+      ],
+      "title": "",
+      "id": "31299"
+    },
+    {
+      "type": "highlight",
+      "description": "Another branch: `dissolve()` rejects unless the pool is still `Prelaunch` and the launch timeout has passed.",
+      "file": "contracts/contract/minipool/RocketMinipoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 570,
+          "end": 576
+        }
+      ],
+      "title": "",
+      "id": "31300"
+    },
+    {
+      "type": "highlight",
+      "description": "`MinipoolDeposit` captures the node’s required up-front ETH — historic (`Full`, `Half`, `Empty`) versus modern `Variable` pools.",
+      "file": "contracts/types/MinipoolDeposit.sol",
+      "highlight": [
+        {
+          "start": 7,
+          "end": 13
+        }
+      ],
+      "title": "",
+      "id": "31301"
+    },
+    {
+      "type": "highlight",
+      "description": "`getUserDepositBalance` shows legacy compatibility: legacy pools read `userDepositBalanceLegacy` unless `depositType` is `Variable`.",
+      "file": "contracts/contract/minipool/RocketMinipoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 73,
+          "end": 79
+        }
+      ],
+      "title": "",
+      "id": "31302"
+    },
+    {
+      "type": "highlight",
+      "description": "When sending the validator deposit the code subtracts either the variable `prestake` or the legacy constant, depending on `depositType`.",
+      "file": "contracts/contract/minipool/RocketMinipoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 271,
+          "end": 276
+        }
+      ],
+      "title": "",
+      "id": "31303"
+    },
+    {
+      "type": "revealFiles",
+      "files": [
+        "contracts/types/MinipoolDetails.sol"
+      ],
+      "description": "`MinipoolDetails` packs every field we have discussed into a single return object. External callers fetch this struct from the manager instead of touching storage slots directly.",
+      "title": "",
+      "id": "31304"
+    },
+    {
+      "type": "highlight",
+      "description": "Manager code iterates all live minipools and counts them by `status`, proving external contracts rely on the delegate’s getters rather than raw storage.",
+      "file": "contracts/contract/minipool/RocketMinipoolManager.sol",
+      "highlight": [
+        {
+          "start": 88,
+          "end": 100
+        }
+      ],
+      "title": "",
+      "id": "31305"
+    },
+    {
+      "type": "highlight",
+      "description": "Public read helpers surface the lifecycle group verbatim (`getStatus`, `getFinalised`, `timestamps`) so other contracts never read the slots directly.",
+      "file": "contracts/contract/minipool/RocketMinipoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 51,
+          "end": 55
+        }
+      ],
+      "title": "",
+      "id": "31306"
+    },
+    {
+      "type": "highlight",
+      "description": "The same pattern for node-side state: address, fee, bond, refundable balance, top-up amount, and the `vacant` flag.",
+      "file": "contracts/contract/minipool/RocketMinipoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 61,
+          "end": 68
+        }
+      ],
+      "title": "",
+      "id": "31307"
+    },
+    {
+      "type": "textOnly",
+      "description": "You now know each **persistent word**, the `enums` that gate behaviour, and the `accessor functions` that expose them — a foundation the rest of the codebase builds on.",
+      "title": "",
+      "id": "31308"
+    }
+  ]
+}

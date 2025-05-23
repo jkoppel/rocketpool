@@ -1,0 +1,124 @@
+{
+  "title": "15.1: Upgrade 1.4 Contract: Quick Orientation",
+  "id": "8gYfheARXI/p7VtWOD6eT3e3ON8J4Xu0w41HHKj9oWU=",
+  "originalId": 2665,
+  "position": 97,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "`RocketUpgradeOneDotFour` is the `Saturn-1 (v1.4)` upgrade script.  It inherits `RocketBase`, so it already has read/write helpers for `RocketStorage` and the `onlyGuardian` gate that earlier tours covered.  What follows is the minimum you must recognise before diving deeper.",
+      "title": "",
+      "id": "31746"
+    },
+    {
+      "type": "highlight",
+      "description": "Opening lines show the `GPL-3 licence`, `pragma 0.8.18`, and just three imports. Seeing `RocketBase` (line 6) confirms this contract is a thin orchestration layer rather than a place where core protocol logic lives.",
+      "file": "contracts/contract/upgrade/RocketUpgradeOneDotFour.sol",
+      "highlight": [
+        {
+          "start": 1,
+          "end": 7
+        }
+      ],
+      "title": "",
+      "id": "31747"
+    },
+    {
+      "type": "highlight",
+      "description": "**State variables** come in four categories.  Lines 15-20 are lifecycle flags (`executed` / `locked`).  Lines 21-46 list every contract address that will be added or upgraded when `v1.4` goes live.",
+      "file": "contracts/contract/upgrade/RocketUpgradeOneDotFour.sol",
+      "highlight": [
+        {
+          "start": 15,
+          "end": 46
+        }
+      ],
+      "title": "",
+      "id": "31748"
+    },
+    {
+      "type": "highlight",
+      "description": "The next block (47-71) mirrors the previous one but stores ABIs instead of addresses.  Line 74 then captures the immutable deployer address; only this account can load data via `set` and then call `lock`.",
+      "file": "contracts/contract/upgrade/RocketUpgradeOneDotFour.sol",
+      "highlight": [
+        {
+          "start": 47,
+          "end": 75
+        }
+      ],
+      "title": "",
+      "id": "31749"
+    },
+    {
+      "type": "highlight",
+      "description": "The constructor wires the storage contract into `RocketBase`, stamps `version = 1`, and records `msg.sender` as deployer.  Nothing else happens until the deployer prepares the upgrade.",
+      "file": "contracts/contract/upgrade/RocketUpgradeOneDotFour.sol",
+      "highlight": [
+        {
+          "start": 77,
+          "end": 83
+        }
+      ],
+      "title": "",
+      "id": "31750"
+    },
+    {
+      "type": "highlight",
+      "description": "`set` (90-145) is deployer-only and may run any time before `lock`. It simply copies the prepared addresses & ABIs into the public variables—no protocol state is touched yet.",
+      "file": "contracts/contract/upgrade/RocketUpgradeOneDotFour.sol",
+      "highlight": [
+        {
+          "start": 90,
+          "end": 145
+        }
+      ],
+      "title": "",
+      "id": "31751"
+    },
+    {
+      "type": "highlight",
+      "description": "`lock` is the safety catch: deployer calls it once satisfied with the staged data, preventing further edits before the DAO vote.",
+      "file": "contracts/contract/upgrade/RocketUpgradeOneDotFour.sol",
+      "highlight": [
+        {
+          "start": 147,
+          "end": 151
+        }
+      ],
+      "title": "",
+      "id": "31752"
+    },
+    {
+      "type": "highlight",
+      "description": "**`execute` (guardian-only)** is the real upgrade. After flipping **`executed`**, it registers brand-new contracts with **`_addContract`** and begins upgrading existing ones with **`_upgradeContract`**.",
+      "file": "contracts/contract/upgrade/RocketUpgradeOneDotFour.sol",
+      "highlight": [
+        {
+          "start": 153,
+          "end": 176
+        }
+      ],
+      "title": "",
+      "id": "31753"
+    },
+    {
+      "type": "highlight",
+      "description": "The remainder of `execute` initialises factories, writes new DAO settings (**RPIP-30/42/46/59/61**), kicks off revenue logic, and finally stores `\"1.4\"` as the network version.  All of this happens exactly once.",
+      "file": "contracts/contract/upgrade/RocketUpgradeOneDotFour.sol",
+      "highlight": [
+        {
+          "start": 185,
+          "end": 223
+        }
+      ],
+      "title": "",
+      "id": "31754"
+    },
+    {
+      "type": "textOnly",
+      "description": "Everything in this file exists to support that single guardian-triggered `execute` call; once it succeeds, `RocketUpgradeOneDotFour`’s job is done.",
+      "title": "",
+      "id": "31755"
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "title": "13.2: Auction Manager: Storage & Pricing Mechanics",
+  "id": "xIPm03xbnhhGe3lhHS4YE3F5MdF6+o/+QtpmXZnlSEs=",
+  "originalId": 2657,
+  "position": 89,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "`RocketAuctionManager` keeps every piece of auction state inside the global `RocketStorage` contract. That means nothing is stored as **Solidity** variables – instead the contract assembles `bytes32` keys and reads or writes through the helpers it inherits from `RocketBase`. This tour follows those helpers and then focuses on the **Dutch-auction** maths that determines a lot’s clearing price.",
+      "title": "",
+      "id": "31651"
+    },
+    {
+      "type": "highlight",
+      "description": "Lines 5-8 show `RocketAuctionManager` importing `RocketBase`, and line 16 declares that it inherits from it. The parent class provides a gateway to `RocketStorage`, so state is managed by **key-value helpers** rather than direct structs or mappings.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 5,
+          "end": 16
+        }
+      ],
+      "title": "",
+      "id": "31652"
+    },
+    {
+      "type": "highlight",
+      "description": "Inside RocketBase the generic helpers appear: `getUint` / `setUint` read or write a raw slot (151-162) while `addUint` / `subUint` perform in-storage arithmetic (178-179).  Every getter or mutator in the auction manager is just a thin wrapper around these calls.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 148,
+          "end": 179
+        }
+      ],
+      "title": "",
+      "id": "31653"
+    },
+    {
+      "type": "highlight",
+      "description": "Global RPL accounting\n- `auction.rpl.allotted` (40, 44-47) tracks how much RPL is already promised to open lots.\n- `getRemainingRPLBalance` (49-52) doesn't store anything – it simply subtracts allotted from the vault's total balance, showing how reads and writes are kept minimal.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 38,
+          "end": 52
+        }
+      ],
+      "title": "",
+      "id": "31654"
+    },
+    {
+      "type": "highlight",
+      "description": "`auction.lots.count` holds the running number of lots.  `setLotCount` (58-60) updates that single slot when `createLot` adds a new auction; every per-lot key will append this index.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 54,
+          "end": 60
+        }
+      ],
+      "title": "",
+      "id": "31655"
+    },
+    {
+      "type": "highlight",
+      "description": "Per-lot metadata wrappers – exists, start/end blocks, start & reserve prices, total RPL – all follow the same recipe: `keccak256(\"auction.lot.<field>\", index)` → `getUint` / `getBool`.  The wrapper names make the storage map feel structured even though it is completely flat.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 63,
+          "end": 80
+        }
+      ],
+      "title": "",
+      "id": "31656"
+    },
+    {
+      "type": "highlight",
+      "description": "Bid bookkeeping uses identical helpers but nests the bidder address inside the key (**91-99**).  `increaseLotAddressBidAmount`, for example, simply forwards to `addUint`, so the arithmetic still happens in `RocketStorage`.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 82,
+          "end": 100
+        }
+      ],
+      "title": "",
+      "id": "31657"
+    },
+    {
+      "type": "highlight",
+      "description": "`getLotPriceAtBlock` implements the quadratic Dutch-auction curve.\n- `tn = _block − startBlock` (119)\n- `td = endBlock − startBlock` (120)\nPrice(t) = `startPrice − (startPrice − reservePrice) · (tn² / td²)` (121)\nThe squared ratio starts the descent steep and gradually flattens it, guaranteeing the reserve price is met exactly at the end block while encouraging earlier bids.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 110,
+          "end": 122
+        }
+      ],
+      "title": "",
+      "id": "31658"
+    },
+    {
+      "type": "highlight",
+      "description": "Demand overlay\n- `getLotPriceByTotalBids` (131-132) converts cumulative ETH bids into an implied RPL price.\n- `getLotCurrentPrice` (135-141) chooses `max(demandPrice, timePrice)`. As soon as bidding implies a higher price than the curve, that higher figure becomes the clearing price and further bids must match it.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 130,
+          "end": 141
+        }
+      ],
+      "title": "",
+      "id": "31659"
+    },
+    {
+      "type": "highlight",
+      "description": "Claimed versus remaining RPL\n`claimed` = `totalETHBid` / `currentPrice` (`145-151`) – capped to avoid **integer over-rounding** – while `remaining` = `total` − `claimed` (`155-157`). These helpers are pure reads; the actual token transfer happens in `claimBid`.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 143,
+          "end": 157
+        }
+      ],
+      "title": "",
+      "id": "31660"
+    },
+    {
+      "type": "highlight",
+      "description": "A lot is considered cleared when either condition is true (`161-163`):\n1. The auction has timed out (`block ≥ endBlock`), or\n2. `demandPrice ≥ timePrice`, meaning bids have overtaken the curve.\nOther functions gate on this predicate before releasing or recycling `RPL`.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 159,
+          "end": 164
+        }
+      ],
+      "title": "",
+      "id": "31661"
+    },
+    {
+      "type": "textOnly",
+      "description": "Every storage interaction you have seen – from global counters to dynamic pricing – goes through `RocketBase`’s helper layer.  This keeps `RocketAuctionManager` upgrade-friendly while the quadratic curve plus the demand overlay ensure each lot settles at a fair, market-driven price.",
+      "title": "",
+      "id": "31662"
+    }
+  ]
+}

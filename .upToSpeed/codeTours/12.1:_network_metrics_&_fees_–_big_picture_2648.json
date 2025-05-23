@@ -1,0 +1,227 @@
+{
+  "title": "12.1: Network Metrics & Fees – Big Picture",
+  "id": "v7SxVGkUqlEP8f3IzPtSeYumCCQr6ZCQMA792xr7CaA=",
+  "originalId": 2648,
+  "position": 80,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "This tour orients you inside the network component and flags two dominant design patterns you will meet again later.",
+      "title": "",
+      "id": "31663"
+    },
+    {
+      "type": "textOnly",
+      "description": "**Implementation side** – seven concrete contracts live in `contracts/contract/network/`:\n- `RocketNetworkBalances.sol`\n- `RocketNetworkPrices.sol`\n- `RocketNetworkPenalties.sol`\n- `RocketNetworkFees.sol`\n- `RocketNetworkRevenues.sol`\n- `RocketNetworkSnapshots.sol`\n- `RocketNetworkVoting.sol`",
+      "title": "",
+      "id": "31664"
+    },
+    {
+      "type": "textOnly",
+      "description": "Interface side – the same seven names under `contracts/interface/network/`, giving a 1:1 mapping between API and implementation.",
+      "title": "",
+      "id": "31665"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketNetworkBalances` interface: three read sections plus two write functions – `submitBalances` & `executeUpdateBalances` – everything else is view-only.",
+      "file": "contracts/interface/network/RocketNetworkBalancesInterface.sol",
+      "highlight": [
+        {
+          "start": 5,
+          "end": 14
+        }
+      ],
+      "title": "",
+      "id": "31666"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketNetworkBalances` header and constructor – inherits `RocketBase` and tags **version 4**.",
+      "file": "contracts/contract/network/RocketNetworkBalances.sol",
+      "highlight": [
+        {
+          "start": 1,
+          "end": 22
+        }
+      ],
+      "title": "",
+      "id": "31667"
+    },
+    {
+      "type": "highlight",
+      "description": "`submitBalances` entry-point: first step of the oracle → consensus → update pattern.",
+      "file": "contracts/contract/network/RocketNetworkBalances.sol",
+      "highlight": [
+        {
+          "start": 80,
+          "end": 82
+        }
+      ],
+      "title": "",
+      "id": "31668"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketNetworkPrices` **constructor** pre-computes two immutable storage keys.",
+      "file": "contracts/contract/network/RocketNetworkPrices.sol",
+      "highlight": [
+        {
+          "start": 21,
+          "end": 28
+        }
+      ],
+      "title": "",
+      "id": "31669"
+    },
+    {
+      "type": "highlight",
+      "description": "`submitPrices` mirrors the same oracle/consensus flow used by `balances`.",
+      "file": "contracts/contract/network/RocketNetworkPrices.sol",
+      "highlight": [
+        {
+          "start": 61,
+          "end": 65
+        }
+      ],
+      "title": "",
+      "id": "31670"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketNetworkPenalties` header and `submitPenalty` signature – **oracle** submits, **consensus** applies.",
+      "file": "contracts/contract/network/RocketNetworkPenalties.sol",
+      "highlight": [
+        {
+          "start": 20,
+          "end": 31
+        }
+      ],
+      "title": "",
+      "id": "31671"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketNetworkFees` interface – purely read functions: `getNodeDemand`, `getNodeFee`, `getNodeFeeByDemand`.",
+      "file": "contracts/interface/network/RocketNetworkFeesInterface.sol",
+      "highlight": [
+        {
+          "start": 5,
+          "end": 9
+        }
+      ],
+      "title": "",
+      "id": "31672"
+    },
+    {
+      "type": "highlight",
+      "description": "**RocketNetworkFees** constructor – minimal, version only.",
+      "file": "contracts/contract/network/RocketNetworkFees.sol",
+      "highlight": [
+        {
+          "start": 20,
+          "end": 22
+        }
+      ],
+      "title": "",
+      "id": "31673"
+    },
+    {
+      "type": "highlight",
+      "description": "`getNodeDemand` derives demand live from deposit pool minus minipool capacity – an on-chain real-time calculation (no oracle, no consensus).",
+      "file": "contracts/contract/network/RocketNetworkFees.sol",
+      "highlight": [
+        {
+          "start": 26,
+          "end": 35
+        }
+      ],
+      "title": "",
+      "id": "31674"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketNetworkRevenues` interface exposes `initialise` and governance-controlled setters for `node` & `voter share`.",
+      "file": "contracts/interface/network/RocketNetworkRevenuesInterface.sol",
+      "highlight": [
+        {
+          "start": 4,
+          "end": 11
+        }
+      ],
+      "title": "",
+      "id": "31675"
+    },
+    {
+      "type": "highlight",
+      "description": "Implementation holds **magnitude/scale constants** and **immutable storage keys** – snapshot based, not oracle based.",
+      "file": "contracts/contract/network/RocketNetworkRevenues.sol",
+      "highlight": [
+        {
+          "start": 11,
+          "end": 22
+        }
+      ],
+      "title": "",
+      "id": "31676"
+    },
+    {
+      "type": "highlight",
+      "description": "`Checkpoint224 struct` and the `push` / `lookup` API that every snapshot-using contract relies on.",
+      "file": "contracts/interface/network/RocketNetworkSnapshotsInterface.sol",
+      "highlight": [
+        {
+          "start": 4,
+          "end": 18
+        }
+      ],
+      "title": "",
+      "id": "31677"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketNetworkVoting` external surface – node counts, voting power and delegation.",
+      "file": "contracts/interface/network/RocketNetworkVotingInterface.sol",
+      "highlight": [
+        {
+          "start": 4,
+          "end": 10
+        }
+      ],
+      "title": "",
+      "id": "31678"
+    },
+    {
+      "type": "highlight",
+      "description": "`Voting constructor` caches the price key – a snapshot lookup used during power calculations.",
+      "file": "contracts/contract/network/RocketNetworkVoting.sol",
+      "highlight": [
+        {
+          "start": 21,
+          "end": 30
+        }
+      ],
+      "title": "",
+      "id": "31679"
+    },
+    {
+      "type": "highlight",
+      "description": "`getVotingPower` samples multiple snapshot series and applies a bonded-ETH square-root formula – all fully on-chain.",
+      "file": "contracts/contract/network/RocketNetworkVoting.sol",
+      "highlight": [
+        {
+          "start": 42,
+          "end": 49
+        }
+      ],
+      "title": "",
+      "id": "31680"
+    },
+    {
+      "type": "textOnly",
+      "description": "**Pattern recap:**\n- `oracle` → submissions accumulate until consensus threshold – then a single update (`Balances`, `Prices`, `Penalties`).\n- on-chain calculation / snapshot accumulator – live maths or governance-set values (`Fees`, `Revenues`, `Voting`, `Snapshots`).\nLater walkthroughs will dig into each contract and pattern in depth.",
+      "title": "",
+      "id": "31681"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "title": "7.1: Tokens: Overview",
+  "id": "b4I00fZ5106YogBSrhs5Do4jGV+7WhfLCAcIqGsYRLo=",
+  "originalId": 2603,
+  "position": 35,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Two `ERC-20` tokens underpin Rocket Pool: collateral-backed `rETH` and inflationary `RPL`. Together with their `ABI-only interface files` they make up the entire `Tokens` component.",
+      "title": "",
+      "id": "31104"
+    },
+    {
+      "type": "highlight",
+      "description": "Opening `contracts/contract/token` reveals `RocketTokenRETH.sol` — the first of only two concrete token contracts.",
+      "file": "contracts/contract/token/RocketTokenRETH.sol",
+      "highlight": [
+        {
+          "start": 1,
+          "end": 6
+        }
+      ],
+      "title": "",
+      "id": "31105"
+    },
+    {
+      "type": "highlight",
+      "description": "The same folder holds exactly one other file: `RocketTokenRPL.sol`, the governance / utility token.",
+      "file": "contracts/contract/token/RocketTokenRPL.sol",
+      "highlight": [
+        {
+          "start": 1,
+          "end": 8
+        }
+      ],
+      "title": "",
+      "id": "31106"
+    },
+    {
+      "type": "highlight",
+      "description": "`rETH`’s `constructor` and `receive()` hook establish its identity and accept raw `ETH` collateral.",
+      "file": "contracts/contract/token/RocketTokenRETH.sol",
+      "highlight": [
+        {
+          "start": 26,
+          "end": 33
+        }
+      ],
+      "title": "",
+      "id": "31107"
+    },
+    {
+      "type": "highlight",
+      "description": "`getEthValue()` converts `rETH` into its backing `ETH` by querying `RocketNetworkBalances`, showing the **dynamic exchange-rate theme**.",
+      "file": "contracts/contract/token/RocketTokenRETH.sol",
+      "highlight": [
+        {
+          "start": 38,
+          "end": 48
+        }
+      ],
+      "title": "",
+      "id": "31108"
+    },
+    {
+      "type": "highlight",
+      "description": "`RPL` begins with constants that pin a `18 M` initial supply and a one-day inflation interval — signalling its inflationary design.",
+      "file": "contracts/contract/token/RocketTokenRPL.sol",
+      "highlight": [
+        {
+          "start": 20,
+          "end": 27
+        }
+      ],
+      "title": "",
+      "id": "31109"
+    },
+    {
+      "type": "highlight",
+      "description": "`getInflationIntervalRate()` pulls the mint-rate from `RocketDAOProtocolSettingsInflation`, putting the DAO in charge of issuance.",
+      "file": "contracts/contract/token/RocketTokenRPL.sol",
+      "highlight": [
+        {
+          "start": 78,
+          "end": 83
+        }
+      ],
+      "title": "",
+      "id": "31110"
+    },
+    {
+      "type": "revealFiles",
+      "files": [
+        "contracts/interface/token/RocketTokenRETHInterface.sol"
+      ],
+      "description": "`RocketTokenRETHInterface` exposes conversion helpers, collateral metrics and mint/burn hooks — a concise public surface.",
+      "title": "",
+      "id": "31111"
+    },
+    {
+      "type": "revealFiles",
+      "files": [
+        "contracts/interface/token/RocketTokenRPLInterface.sol"
+      ],
+      "description": "`RocketTokenRPLInterface` surfaces **DAO**-driven inflation state, minting methods and the legacy `token-swap` entry point.",
+      "title": "",
+      "id": "31112"
+    },
+    {
+      "type": "textOnly",
+      "description": "**Key cross-contract links:**\n- `rETH` talks to `RocketDepositPool`, `RocketNetworkBalances` and `RocketDAOProtocolSettingsNetwork`.\n- `RPL` consults `RocketDAOProtocolSettingsInflation` and routes freshly-minted supply into `RocketVault`.\nThese touch-points guide future deep-dives.",
+      "title": "",
+      "id": "31113"
+    }
+  ]
+}

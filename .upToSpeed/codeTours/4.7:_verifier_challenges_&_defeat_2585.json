@@ -1,0 +1,111 @@
+{
+  "title": "4.7: Verifier Challenges & Defeat",
+  "id": "Pfoc4UxJXSPWLqDYUbjuPoU/NOvuL+tssfpKsxs+F0U=",
+  "originalId": 2585,
+  "position": 17,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "We will trace the life-cycle of a dispute: how another `node` launches a `challenge`, how `depth math` is enforced, and how the `proposal` is finally defeated when the `proposer` stays silent.",
+      "title": "",
+      "id": "30851"
+    },
+    {
+      "type": "highlight",
+      "description": "`createChallenge` starts with strong gate-keeping:\n- the target proposal must still be Pending (`lines 173-176`).\n- nodeCount and maxDepth are fetched so later depth rules can be applied.\nThese early guards ensure that challenges only hit proposals that can still be overturned.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolVerifier.sol",
+      "highlight": [
+        {
+          "start": 170,
+          "end": 178
+        }
+      ],
+      "title": "",
+      "id": "30852"
+    },
+    {
+      "type": "highlight",
+      "description": "Next, we guarantee that the chosen index has never been disputed before. The packed `uint` stores:\n`state` → `timestamp` → `challenger address`. `setChallengeState()` encodes the enum, giving us an immutable on-chain audit trail of who challenged what and when.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolVerifier.sol",
+      "highlight": [
+        {
+          "start": 191,
+          "end": 199
+        }
+      ],
+      "title": "",
+      "id": "30853"
+    },
+    {
+      "type": "highlight",
+      "description": "**Depth discipline:** lines 208-218 recompute a root from the supplied witness and insist it equals the parent node found by `getPollardRootIndex`. Only proofs exactly one round (`depthPerRound = 5`) deeper are accepted, forcing challengers to progress down the tree in controlled steps.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolVerifier.sol",
+      "highlight": [
+        {
+          "start": 206,
+          "end": 221
+        }
+      ],
+      "title": "",
+      "id": "30854"
+    },
+    {
+      "type": "highlight",
+      "description": "Finally, the challenger must stake the per-proposal `challengeBond` (locked in `RocketNodeStaking`) and an event is emitted.  The bond both deters spam disputes and funds eventual rewards or burns.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolVerifier.sol",
+      "highlight": [
+        {
+          "start": 224,
+          "end": 231
+        }
+      ],
+      "title": "",
+      "id": "30855"
+    },
+    {
+      "type": "highlight",
+      "description": "`getPollardRootIndex` is the brain behind the **\"one round deeper\"** rule. It interprets three regions of the extended tree and always divides the index by `2^depthPerRound`, mapping a child to its **pollard root**. Any index that does not align with the round boundaries reverts.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolVerifier.sol",
+      "highlight": [
+        {
+          "start": 649,
+          "end": 670
+        }
+      ],
+      "title": "",
+      "id": "30856"
+    },
+    {
+      "type": "highlight",
+      "description": "`setChallengeState()` shows the bit-twiddling used everywhere in the verifier: clear the 8-bit state slot, then OR in the new value, leaving timestamp and challenger address untouched.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolVerifier.sol",
+      "highlight": [
+        {
+          "start": 713,
+          "end": 717
+        }
+      ],
+      "title": "",
+      "id": "30857"
+    },
+    {
+      "type": "highlight",
+      "description": "`defeatProposal` is the escape hatch when a challenge goes unanswered:\n- proposal must still be `Pending` and the index still `Challenged` (240-250)\n- `block.timestamp` must exceed `timestamp` + `challengePeriod` (255-264)\n- `daoProposal.destroy()` is called (267) and the decisive index is stored so reward maths work later",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolVerifier.sol",
+      "highlight": [
+        {
+          "start": 237,
+          "end": 270
+        }
+      ],
+      "title": "",
+      "id": "30858"
+    },
+    {
+      "type": "textOnly",
+      "description": "Putting it all together:\n1. `createChallenge` locks a challenger bond and records an unanswered dispute.\n2. The proposer must answer with `submitRoot` within `challengePeriod`. Each answer raises the bar for further challenges.\n3. If the timer expires, `defeatProposal` destroys the proposal, unlocks challenger bonds with rewards, and burns part of the proposer’s bond.\nA learner who understands these three checkpoints can clearly explain how an invalid proposal is defeated in Rocket Pool’s optimistic fraud-proof system.",
+      "title": "",
+      "id": "30859"
+    }
+  ]
+}

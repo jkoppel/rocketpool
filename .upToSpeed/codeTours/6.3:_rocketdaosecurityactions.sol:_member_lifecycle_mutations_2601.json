@@ -1,0 +1,156 @@
+{
+  "title": "6.3: RocketDAOSecurityActions.sol: Member Lifecycle Mutations",
+  "id": "1ZN/zvp1QsHhC5AMfyiNbJy80gTm03eWd3q7N8Mqwm8=",
+  "originalId": 2601,
+  "position": 33,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "This tour follows every route inside `RocketDAOSecurityActions` that can change council membership, then unpacks the two private helpers that actually flip storage bits.",
+      "title": "",
+      "id": "31045"
+    },
+    {
+      "type": "highlight",
+      "description": "Lines 19-23 declare four events. Each `public action` emits one of these so every membership change is permanently recorded on-chain.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 19,
+          "end": 23
+        }
+      ],
+      "title": "",
+      "id": "31046"
+    },
+    {
+      "type": "highlight",
+      "description": "`actionKick` (33-37) is guarded by `onlyLatestContract(\"rocketDAOSecurityProposals\")`. Only a proposal contract that the network recognises as current may expel a member.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 31,
+          "end": 37
+        }
+      ],
+      "title": "",
+      "id": "31047"
+    },
+    {
+      "type": "highlight",
+      "description": "`actionKickMulti` (42-46) simply loops over addresses and re-enters `actionKick`. The reuse keeps gas low and preserves the single-event pattern per removal.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 40,
+          "end": 46
+        }
+      ],
+      "title": "",
+      "id": "31048"
+    },
+    {
+      "type": "highlight",
+      "description": "actionJoin (50-55) is called by an invited node itself. After passing the same `onlyLatestContract` gate (this time keyed to the actions contract) it delegates to `_memberJoin` and emits `ActionJoined`.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 49,
+          "end": 55
+        }
+      ],
+      "title": "",
+      "id": "31049"
+    },
+    {
+      "type": "highlight",
+      "description": "`actionRequestLeave` (58-66) writes a future timestamp: `now + rocketDAOProtocolSettingsSecurity.getLeaveTime()`. That value becomes the member’s `leaveAcceptedTime` once the request is processed.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 57,
+          "end": 66
+        }
+      ],
+      "title": "",
+      "id": "31050"
+    },
+    {
+      "type": "highlight",
+      "description": "**`actionLeave`** (71-83) enforces two windows:\n- `leaveAcceptedTime` < `block.timestamp` (the notice period has passed)\n- `leaveAcceptedTime` + `getActionTime()` > `block.timestamp` (the approval has not expired)\nIf both hold it calls **`_memberRemove`**.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 70,
+          "end": 83
+        }
+      ],
+      "title": "",
+      "id": "31051"
+    },
+    {
+      "type": "highlight",
+      "description": "`_memberRemove` (92-105) clears every per-member key then calls `AddressSetStorage.removeItem` to keep the index compact.  Lines 101-102 also erase any lingering invite/leave execution times.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 92,
+          "end": 105
+        }
+      ],
+      "title": "",
+      "id": "31052"
+    },
+    {
+      "type": "textOnly",
+      "description": "Clearing those timestamps prevents stale proposals from blocking future invites or exits.",
+      "title": "",
+      "id": "31053"
+    },
+    {
+      "type": "highlight",
+      "description": "`removeItem` performs a swap-with-last delete (55-58) so shrinking the member set always costs O(1) gas regardless of size.",
+      "file": "contracts/contract/util/AddressSetStorage.sol",
+      "highlight": [
+        {
+          "start": 48,
+          "end": 60
+        }
+      ],
+      "title": "",
+      "id": "31054"
+    },
+    {
+      "type": "highlight",
+      "description": "`_memberJoin` begins by loading the invite execution time (114) and validating that it exists (116), hasn’t expired (118) and that the address is not already a member (120).",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 108,
+          "end": 120
+        }
+      ],
+      "title": "",
+      "id": "31055"
+    },
+    {
+      "type": "highlight",
+      "description": "When checks pass it sets the membership `bool`, records join time and appends the address to the index via `addressSetStorage.addItem` (122-126).",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 121,
+          "end": 126
+        }
+      ],
+      "title": "",
+      "id": "31056"
+    },
+    {
+      "type": "textOnly",
+      "description": "All five externals—`join`, `requestLeave`, `leave`, `kick`, `kickMulti`—ultimately funnel into `_memberJoin` or `_memberRemove`. The `onlyLatestContract` modifier ensures the call always originates from the recognised actions or proposals contract, making `RocketDAOSecurityActions` the sole authority that mutates council membership.",
+      "title": "",
+      "id": "31057"
+    }
+  ]
+}

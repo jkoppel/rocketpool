@@ -1,0 +1,196 @@
+{
+  "title": "2.2: RocketStorage Deep Dive",
+  "id": "S9aSjAm+4aDcqZPBqjg7PdlSaLiOuybP1m169nKk8bw=",
+  "originalId": 2583,
+  "position": 3,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "`RocketStorage` is the on-chain database every other `Rocket Pool` contract relies on. We will tour its **eternal-storage design**, the **guardian bootstrap flow**, and the **typed read/write helpers** that gate all state changes.",
+      "title": "",
+      "id": "30836"
+    },
+    {
+      "type": "highlight",
+      "description": "Seven private mappings – one per `Solidity` primitive – are keyed by `bytes32`. Using hashes as keys keeps the layout stable across upgrades, while the value type (`string`, `bytes`, `uint256`, …) guarantees slot-level type-safety.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 20,
+          "end": 28
+        }
+      ],
+      "title": "",
+      "id": "30837"
+    },
+    {
+      "type": "highlight",
+      "description": "A single boolean, `storageInit`, records whether initial deployment is complete.  Later we will see the access-control modifier change behaviour based on this flag.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 37,
+          "end": 38
+        }
+      ],
+      "title": "",
+      "id": "30838"
+    },
+    {
+      "type": "highlight",
+      "description": "`onlyLatestRocketNetworkContract` safeguards every mutating helper. After `storageInit` is true (42-44) the caller must be a contract flagged `contract.exists==true`. Before that flip (46-50) the `tx.origin` guardian retains emergency access, giving the deployer a bootstrap back-door.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 40,
+          "end": 53
+        }
+      ],
+      "title": "",
+      "id": "30839"
+    },
+    {
+      "type": "highlight",
+      "description": "**Guardian boot-strap step 1** – the `constructor` sets the deployer as the initial guardian.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 57,
+          "end": 60
+        }
+      ],
+      "title": "",
+      "id": "30840"
+    },
+    {
+      "type": "highlight",
+      "description": "Step 2 – `setGuardian` lets the `guardian` nominate a replacement; the address is staged in `newGuardian` but nothing changes yet.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 67,
+          "end": 73
+        }
+      ],
+      "title": "",
+      "id": "30841"
+    },
+    {
+      "type": "highlight",
+      "description": "Step 3 – `confirmGuardian` must be sent by the nominee.  It flips the live guardian, clears the staging slot, and emits `GuardianChanged` – a two-transaction safety pattern.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 75,
+          "end": 86
+        }
+      ],
+      "title": "",
+      "id": "30842"
+    },
+    {
+      "type": "highlight",
+      "description": "Step 4 – `setDeployedStatus` is the guardian’s final act: it locks `storageInit=true`, permanently removing the bootstrap shortcut.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 94,
+          "end": 99
+        }
+      ],
+      "title": "",
+      "id": "30843"
+    },
+    {
+      "type": "highlight",
+      "description": "Two extra mappings – `withdrawalAddresses` and `pendingWithdrawalAddresses` – sit outside the bytes32 system, ensuring network contracts cannot accidentally overwrite them.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 30,
+          "end": 32
+        }
+      ],
+      "title": "",
+      "id": "30844"
+    },
+    {
+      "type": "highlight",
+      "description": "`getNodeWithdrawalAddress` returns the node’s own address when no record exists (105-109), guaranteeing nodes are never bricked by an unset field.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 103,
+          "end": 111
+        }
+      ],
+      "title": "",
+      "id": "30845"
+    },
+    {
+      "type": "highlight",
+      "description": "`setWithdrawalAddress` can apply immediately when `_confirm==true` (126-128) or stage the change in `pendingWithdrawalAddresses` (129-132) for a second, off-chain signature – a **multisig-style flow**.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 118,
+          "end": 133
+        }
+      ],
+      "title": "",
+      "id": "30846"
+    },
+    {
+      "type": "highlight",
+      "description": "`confirmWithdrawalAddress` must come from the pending address itself (138). It finalises the change and deletes the staging slot, mirroring the guardian rotation pattern.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 135,
+          "end": 142
+        }
+      ],
+      "title": "",
+      "id": "30847"
+    },
+    {
+      "type": "highlight",
+      "description": "The getter block is a pure read-only façade. Each function directly returns from its mapping; reads are always free and unrestricted.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 152,
+          "end": 185
+        }
+      ],
+      "title": "",
+      "id": "30848"
+    },
+    {
+      "type": "highlight",
+      "description": "A representative setter: one line mutates the type-specific map, and `onlyLatestRocketNetworkContract` enforces caller gating.  The following setters (199-221) replicate this template for `string`, `bytes`, `bool`, `int`, and `bytes32`.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 189,
+          "end": 196
+        }
+      ],
+      "title": "",
+      "id": "30849"
+    },
+    {
+      "type": "highlight",
+      "description": "Cleanup & math helpers: `delete*` functions (224-256) simply remove a slot, and `addUint`/`subUint` (260-270) wrap `SafeMath` operations.  All share the same modifier, so every state change in **Rocket Pool** flows through these typed, access-controlled helpers.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 224,
+          "end": 270
+        }
+      ],
+      "title": "",
+      "id": "30850"
+    }
+  ]
+}

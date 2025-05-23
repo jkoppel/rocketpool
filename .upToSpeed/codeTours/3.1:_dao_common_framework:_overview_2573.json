@@ -1,0 +1,143 @@
+{
+  "title": "3.1: DAO Common Framework: Overview",
+  "id": "G//UzGY5+7sWXnaBMcPNDda3bF5rrr3ftyOOdBUvGws=",
+  "originalId": 2573,
+  "position": 7,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Every **Rocket Pool DAO**—**Node-Trusted**, **Protocol**, or **Security**—relies on just two primitives: a `generic proposal engine` and a `type-descriptor enum`. This tour shows where they live and what they look like.",
+      "title": "",
+      "id": "30699"
+    },
+    {
+      "type": "highlight",
+      "description": "All proposals move through the seven states below (lines 8-15). That finite life-cycle is shared by every DAO.",
+      "file": "contracts/interface/dao/RocketDAOProposalInterface.sol",
+      "highlight": [
+        {
+          "start": 7,
+          "end": 16
+        }
+      ],
+      "title": "",
+      "id": "30700"
+    },
+    {
+      "type": "highlight",
+      "description": "Lines 18-38 list every `read-only getter` and `mutating action` exposed by the `proposal interface`. Every `DAO contract` is limited to this surface.",
+      "file": "contracts/interface/dao/RocketDAOProposalInterface.sol",
+      "highlight": [
+        {
+          "start": 18,
+          "end": 38
+        }
+      ],
+      "title": "",
+      "id": "30701"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketDAOProposal` implements that interface once for the entire system (line 12) and declares four **governance-related events** (lines 16-19).",
+      "file": "contracts/contract/dao/RocketDAOProposal.sol",
+      "highlight": [
+        {
+          "start": 11,
+          "end": 19
+        }
+      ],
+      "title": "",
+      "id": "30702"
+    },
+    {
+      "type": "highlight",
+      "description": "The constant on lines 22-24 prefixes every storage key. This is the **eternal-storage pattern** that keeps the contract upgrade-friendly.",
+      "file": "contracts/contract/dao/RocketDAOProposal.sol",
+      "highlight": [
+        {
+          "start": 22,
+          "end": 24
+        }
+      ],
+      "title": "",
+      "id": "30703"
+    },
+    {
+      "type": "textOnly",
+      "description": "Next: a quick, name-only preview of the four public actions every DAO calls.",
+      "title": "",
+      "id": "30704"
+    },
+    {
+      "type": "highlight",
+      "description": "`add` sets up a new proposal, timestamps it, and saves its metadata.",
+      "file": "contracts/contract/dao/RocketDAOProposal.sol",
+      "highlight": [
+        {
+          "start": 158,
+          "end": 192
+        }
+      ],
+      "title": "",
+      "id": "30705"
+    },
+    {
+      "type": "highlight",
+      "description": "`vote` records one weighted vote per member and updates vote tallies.",
+      "file": "contracts/contract/dao/RocketDAOProposal.sol",
+      "highlight": [
+        {
+          "start": 195,
+          "end": 215
+        }
+      ],
+      "title": "",
+      "id": "30706"
+    },
+    {
+      "type": "highlight",
+      "description": "`execute` fires the proposal’s payload once it has enough support, then flags it as executed.",
+      "file": "contracts/contract/dao/RocketDAOProposal.sol",
+      "highlight": [
+        {
+          "start": 218,
+          "end": 230
+        }
+      ],
+      "title": "",
+      "id": "30707"
+    },
+    {
+      "type": "highlight",
+      "description": "`cancel` lets the original proposer withdraw while the proposal is still pending or active.",
+      "file": "contracts/contract/dao/RocketDAOProposal.sol",
+      "highlight": [
+        {
+          "start": 232,
+          "end": 242
+        }
+      ],
+      "title": "",
+      "id": "30708"
+    },
+    {
+      "type": "highlight",
+      "description": "`DAO settings modules` use this enum (lines 5-12) to declare whether a governed parameter is a `UINT256`, `BOOL`, `ADDRESS`, etc.",
+      "file": "contracts/types/SettingType.sol",
+      "highlight": [
+        {
+          "start": 5,
+          "end": 13
+        }
+      ],
+      "title": "",
+      "id": "30709"
+    },
+    {
+      "type": "textOnly",
+      "description": "That’s it: one proposal engine plus a tiny `enum`. Future tours will unpack the inner logic of these files and show how individual DAOs extend them.",
+      "title": "",
+      "id": "30710"
+    }
+  ]
+}

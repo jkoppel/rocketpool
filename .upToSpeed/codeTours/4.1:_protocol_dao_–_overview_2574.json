@@ -1,0 +1,130 @@
+{
+  "title": "4.1: Protocol DAO – Overview",
+  "id": "z2sDMOUTQZbn7Rmx17c/6ZDH0vvYK7BMlUXektyMlYI=",
+  "originalId": 2574,
+  "position": 11,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Before drilling into implementation details, take a quick lap around the `Protocol-DAO` terrain. Five **Solidity** contracts choreograph governance while a family of `Settings` contracts supply the knobs it can turn. By the end of this walk you will recognise each role and know where every parameter lives.",
+      "title": "",
+      "id": "30761"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketDAOProtocol` is the on-chain entry point.  Line 29 declares the `daoNameSpace` prefix that all its storage keys share, and the modifier on lines 31-35 enforces a temporary *bootstrap* phase.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocol.sol",
+      "highlight": [
+        {
+          "start": 28,
+          "end": 35
+        }
+      ],
+      "title": "",
+      "id": "30762"
+    },
+    {
+      "type": "highlight",
+      "description": "During bootstrap guardians can bypass voting. `bootstrapSettingMulti` (56-64) simply forwards to the `Proposals engine` then logs, demonstrating that this contract owns the **“shortcut”** versions of every governance action.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocol.sol",
+      "highlight": [
+        {
+          "start": 56,
+          "end": 64
+        }
+      ],
+      "title": "",
+      "id": "30763"
+    },
+    {
+      "type": "highlight",
+      "description": "Lifecycle root – `propose()`. It checks governance is enabled, totals voting power, writes quorum figures, then hands a **Merkle root** to the `Verifier` (54-55). Every voteable proposal starts here.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 39,
+          "end": 57
+        }
+      ],
+      "title": "",
+      "id": "30764"
+    },
+    {
+      "type": "highlight",
+      "description": "`vote()` (65-75) is the phase-1 entry-point. It calls `verifyVote` on the `Verifier` (line 72) to prove the caller’s weight, then records the vote.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 65,
+          "end": 75
+        }
+      ],
+      "title": "",
+      "id": "30765"
+    },
+    {
+      "type": "highlight",
+      "description": "execute() (121-131) runs once a proposal has *Succeeded*.  The low-level call on line 128 dispatches the stored payload to `RocketDAOProtocolProposals` where the real mutation happens.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposal.sol",
+      "highlight": [
+        {
+          "start": 120,
+          "end": 131
+        }
+      ],
+      "title": "",
+      "id": "30766"
+    },
+    {
+      "type": "highlight",
+      "description": "**onlyExecutingContracts()** (34-37) is that **mutation gate**. It accepts calls only from `RocketDAOProtocol` (bootstrap) or `RocketDAOProtocolProposal` (post-vote), keeping every state change behind governance.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolProposals.sol",
+      "highlight": [
+        {
+          "start": 33,
+          "end": 38
+        }
+      ],
+      "title": "",
+      "id": "30767"
+    },
+    {
+      "type": "highlight",
+      "description": "**The Verifier** polices optimistic fraud proofs.  `depthPerRound` at `line 20` controls how many tree levels each challenge peels; `helper constants` directly below support its maths.  We will tour that algorithm later.",
+      "file": "contracts/contract/dao/protocol/RocketDAOProtocolVerifier.sol",
+      "highlight": [
+        {
+          "start": 18,
+          "end": 24
+        }
+      ],
+      "title": "",
+      "id": "30768"
+    },
+    {
+      "type": "highlight",
+      "description": "Every `Settings` contract inherits this base.  **Line 13** stores its own `namespace` and the **modifier on 17** insists that only `RocketDAOProtocolProposals` may write once deployed.",
+      "file": "contracts/contract/dao/protocol/settings/RocketDAOProtocolSettings.sol",
+      "highlight": [
+        {
+          "start": 10,
+          "end": 20
+        }
+      ],
+      "title": "",
+      "id": "30769"
+    },
+    {
+      "type": "textOnly",
+      "description": "All of those concrete Settings live under `contracts/contract/dao/protocol/settings/` — files like `SettingsDeposit`, `SettingsMegapool`, `SettingsMinipool`, `SettingsRewards`, and more.  Think of the folder as a toolbox of parameters the **DAO** can dial up or down.",
+      "title": "",
+      "id": "30770"
+    },
+    {
+      "type": "textOnly",
+      "description": "Quick map recap:\n- `RocketDAOProtocol` – guardian bootstrap shortcuts\n- `RocketDAOProtocolProposal` – propose / vote / execute lifecycle\n- `RocketDAOProtocolProposals` – performs the successful payloads\n- `RocketDAOProtocolVerifier` – optimistic fraud-proof engine\n- `Settings contracts` – the configurable knobs\n\nWith this orientation you can now dive into any part of the Protocol-DAO and know where you are.",
+      "title": "",
+      "id": "30771"
+    }
+  ]
+}

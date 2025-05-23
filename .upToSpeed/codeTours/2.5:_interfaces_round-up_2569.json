@@ -1,0 +1,66 @@
+{
+  "title": "2.5: Interfaces Round-up",
+  "id": "ZELEVCDg/CKdDnvVYlAuBIGbGy8ZFvmrZBqdMKWcCrQ=",
+  "originalId": 2569,
+  "position": 6,
+  "steps": [
+    {
+      "type": "highlight",
+      "description": "`RocketStorageInterface` is the single source of persistent state. Scrolling from top to bottom you can spot deliberate clusters:\n- lines 6-13 – deployment status & temporary guardian\n- lines 14-22 – generic getters\n- lines 23-30 – generic setters\n- lines 32-39 – deleters matching the setters\n- lines 41-44 – arithmetic helpers that update counters in-place\n- lines 46-50 – node-specific protected storage helpers\nKnowing these headings means you can answer \"does storage support X?\" in seconds, without touching implementation code.",
+      "file": "contracts/interface/RocketStorageInterface.sol",
+      "highlight": [
+        {
+          "start": 4,
+          "end": 50
+        }
+      ],
+      "title": "",
+      "id": "30679"
+    },
+    {
+      "type": "highlight",
+      "description": "Nearly every contract (the vault itself is the main exception) inherits `RocketBase`. Line 5 imports the storage interface, and line 19 stores an immutable pointer set in the constructor. This parent centralises access control modifiers and—further down in the same file—tiny wrappers like `getAddress()`, `setUint()`, `addUint()`, etc. As a result, child contracts never touch storage directly; they call the interface methods you saw on the previous slide.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 5,
+          "end": 22
+        }
+      ],
+      "title": "",
+      "id": "30680"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketVaultInterface` collects every authorised balance-sheet verb in one place:\n- `depositEther` / `withdrawEther` for native ETH\n- `depositToken` / `withdrawToken` / `transferToken` / `burnToken` for ERC-20s\n- `balanceOf(…)` helpers for read-only queries\nAny time you need to trace value flowing through the system this list is the definitive checklist.",
+      "file": "contracts/interface/RocketVaultInterface.sol",
+      "highlight": [
+        {
+          "start": 6,
+          "end": 15
+        }
+      ],
+      "title": "",
+      "id": "30681"
+    },
+    {
+      "type": "highlight",
+      "description": "Pull-based `ETH` withdrawals go through a minimal adapter. A module that expects `ETH` must implement `receiveVaultWithdrawalETH()`; the vault calls this hook instead of sending value blindly. This pattern isolates side-effects and keeps vault logic oblivious to recipient contract internals.",
+      "file": "contracts/interface/RocketVaultWithdrawerInterface.sol",
+      "highlight": [
+        {
+          "start": 5,
+          "end": 7
+        }
+      ],
+      "title": "",
+      "id": "30682"
+    },
+    {
+      "type": "textOnly",
+      "description": "Whenever you explore a new **Rocket Pool** component, open its interface first. The four files you just visited form the **typed public APIs** that every other module relies on, so you can confirm available signatures at a glance without wading through implementations.",
+      "title": "",
+      "id": "30683"
+    }
+  ]
+}

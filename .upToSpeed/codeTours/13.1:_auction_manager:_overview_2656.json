@@ -1,0 +1,111 @@
+{
+  "title": "13.1: Auction Manager: Overview",
+  "id": "HLii5y+ULg39pxxZ6TyUm0XzsTuRmMXFrsvmghEFt1k=",
+  "originalId": 2656,
+  "position": 88,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "`Rocket Auction Manager` orchestrates the liquidation of `RPL` that has been slashed or otherwise forfeited. In this brief tour we look at its public interface, the key dependencies it pulls in, the events it emits, and the four **entry-points** that drive its life-cycle.",
+      "title": "",
+      "id": "31633"
+    },
+    {
+      "type": "highlight",
+      "description": "Every externally visible capability is declared here.\n- Lines 6-18 – constant & per-lot view helpers.\n- Lines 19-25 – price utilities and clearance check.\n- Lines 26-29 – the four mutating calls that actually advance an auction.",
+      "file": "contracts/interface/auction/RocketAuctionManagerInterface.sol",
+      "highlight": [
+        {
+          "start": 5,
+          "end": 30
+        }
+      ],
+      "title": "",
+      "id": "31634"
+    },
+    {
+      "type": "highlight",
+      "description": "`SafeMath` keeps arithmetic safe, `RocketBase` supplies shared storage helpers, and the remaining imports give access to vault balances, network prices and DAO settings. Line 16 shows inheritance from `RocketBase` and the **interface** we just saw.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 5,
+          "end": 16
+        }
+      ],
+      "title": "",
+      "id": "31635"
+    },
+    {
+      "type": "highlight",
+      "description": "Front-ends and indexers watch these four events to track the auction’s progress: creation, bidding, successful claim, and the final sweep of leftovers.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 22,
+          "end": 25
+        }
+      ],
+      "title": "",
+      "id": "31636"
+    },
+    {
+      "type": "highlight",
+      "description": "`createLot` – anyone can open a new liquidation lot when the DAO setting allows it and enough un-allotted RPL is available.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 166,
+          "end": 167
+        }
+      ],
+      "title": "",
+      "id": "31637"
+    },
+    {
+      "type": "highlight",
+      "description": "`placeBid` – bidders send ETH against an active lot; any excess above the current cap is immediately refunded.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 196,
+          "end": 197
+        }
+      ],
+      "title": "",
+      "id": "31638"
+    },
+    {
+      "type": "highlight",
+      "description": "`claimBid` – once a lot clears (either time-based or demand-based) a bidder exchanges their recorded `ETH` for the proportional amount of `RPL`.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 226,
+          "end": 227
+        }
+      ],
+      "title": "",
+      "id": "31639"
+    },
+    {
+      "type": "highlight",
+      "description": "`recoverUnclaimedRPL` – after the claim window closes, any stranded RPL is swept back into the contract’s free pool.",
+      "file": "contracts/contract/auction/RocketAuctionManager.sol",
+      "highlight": [
+        {
+          "start": 259,
+          "end": 260
+        }
+      ],
+      "title": "",
+      "id": "31640"
+    },
+    {
+      "type": "textOnly",
+      "description": "Life-cycle recap:\n1. `createLot` picks up surplus **RPL** and fixes auction parameters.\n2. During the bidding window `placeBid` funnels **ETH** to the deposit pool while keeping the price curve honest.\n3. When the lot clears, `claimBid` lets each participant withdraw their share of **RPL**.\n4. Finally, `recoverUnclaimedRPL` returns leftovers so the next lot can start fresh.",
+      "title": "",
+      "id": "31641"
+    }
+  ]
+}

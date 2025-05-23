@@ -1,0 +1,189 @@
+{
+  "title": "10.2: Megapool Storage Layout",
+  "id": "YGIoYu+JQQjqgT5Zq+iv6FYGVwmsysgfYFOp9uyk5ss=",
+  "originalId": 2634,
+  "position": 66,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "This tour dissects every persistent variable declared in `RocketMegapoolStorageLayout` so you can read the delegate with confidence.\n- step through the **enum** and **structs** line-by-line\n- clarify the unit tricks (`milliether` vs `gwei`)\n- bucket the remaining slots into logical groups\n- finish by watching two **delegate functions** touch the fields that often confuse newcomers.",
+      "title": "",
+      "id": "31397"
+    },
+    {
+      "type": "highlight",
+      "description": "Status is the canonical life-cycle for any validator in a megapool.  The ordering lets later code compare stages with simple `<`/`>` checks, but most gate-keeping relies on the booleans inside `ValidatorInfo` instead.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 14,
+          "end": 22
+        }
+      ],
+      "title": "",
+      "id": "31398"
+    },
+    {
+      "type": "highlight",
+      "description": "ValidatorInfo begins with data that does **not** fit in one slot:\n- pubKey is a 48-byte BLS key.\n- The four `uint32` values are stored in *milliether* (10¹⁵ wei) or *gwei* (10⁹ wei) so 32 ETH fits inside 32 bits.\n  - lastRequestedValue / lastRequestedBond: milli-ether amounts requested from the deposit pool.\n  - depositValue: total deposited, reported by the Beacon chain in gwei.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 24,
+          "end": 31
+        }
+      ],
+      "title": "",
+      "id": "31399"
+    },
+    {
+      "type": "highlight",
+      "description": "Seven booleans cheaply encode the validator's journey:\n- `staked`, `exited`, `inQueue` map to the obvious stages.\n- `inPrestake`, `expressUsed`, `dissolved` cover intermediate paths (express tickets, failure to stake).\n- `exiting` flips true once an on-chain exit proof is verified, guarding reward distribution.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 32,
+          "end": 39
+        }
+      ],
+      "title": "",
+      "id": "31400"
+    },
+    {
+      "type": "highlight",
+      "description": "Three `uint64` Beacon-chain facts round out the struct:\n- `validatorIndex` – index used in Merkle proofs.\n- `exitBalance` – final balance reclaimed (gwei again to halve storage).\n- `withdrawableEpoch` – when the validator can be withdrawn.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 40,
+          "end": 43
+        }
+      ],
+      "title": "",
+      "id": "31401"
+    },
+    {
+      "type": "highlight",
+      "description": "`PrestakeData` is short-lived storage – only the validator’s BLS signature survives between the 1 ETH prestake and the 31 ETH top-up.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 45,
+          "end": 48
+        }
+      ],
+      "title": "",
+      "id": "31402"
+    },
+    {
+      "type": "highlight",
+      "description": "**Delegate-meta bucket:**\n- `storageState` blocks direct calls to the logic contract.\n- `expirationBlock` lets the factory issue time-limited delegates.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 54,
+          "end": 56
+        }
+      ],
+      "title": "",
+      "id": "31403"
+    },
+    {
+      "type": "highlight",
+      "description": "Proxy-meta bucket:\n`rocketMegapoolDelegate` stores the active implementation; `useLatestDelegate` tells the proxy to auto-upgrade when the registry changes.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 61,
+          "end": 63
+        }
+      ],
+      "title": "",
+      "id": "31404"
+    },
+    {
+      "type": "highlight",
+      "description": "Pool-accounting bucket:\n- `nodeAddress` – operator identity.\n- `numValidators` / `numInactiveValidators` feed bond-requirement math.\n- `assignedValue` – ETH already pulled from the deposit pool, waiting to stake.\n- `refundValue` – all ETH owed back to the operator (rewards, bond reductions, dissolved deposits).\n- `nodeRewards` (legacy), `nodeBond` (operator capital) and `userCapital` (borrowed capital) describe the balance sheet.\n- `debt` tracks penalties or shortfalls.\n- `lastDistributionBlock` timestamps the last reward split.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 68,
+          "end": 82
+        }
+      ],
+      "title": "",
+      "id": "31405"
+    },
+    {
+      "type": "highlight",
+      "description": "**Mappings bucket:**\n- validators: `uint32` ➜ `ValidatorInfo`.\n- prestakeData: `uint32` ➜ `BLS signature cache`.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 83,
+          "end": 85
+        }
+      ],
+      "title": "",
+      "id": "31406"
+    },
+    {
+      "type": "highlight",
+      "description": "Exit-tracking bucket:\n`numExitingValidators` locks reward distribution while non-zero.\n`soonestWithdrawableEpoch` keeps the minimum epoch across all exits so the lock can be lifted as soon as possible.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 86,
+          "end": 88
+        }
+      ],
+      "title": "",
+      "id": "31407"
+    },
+    {
+      "type": "highlight",
+      "description": "Penalty mapping: arbitrary keys ➜ amounts, letting multiple independent penalties accumulate without collision.",
+      "file": "contracts/contract/megapool/RocketMegapoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 89,
+          "end": 90
+        }
+      ],
+      "title": "",
+      "id": "31408"
+    },
+    {
+      "type": "highlight",
+      "description": "`notifyExit` writes both exit-tracking fields we just met. Line 472 increments the counter; 474-476 maintains the **minimum** `withdrawable epoch`, which the `reward distribution guard` checks on line 368.",
+      "file": "contracts/contract/megapool/RocketMegapoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 468,
+          "end": 476
+        }
+      ],
+      "title": "",
+      "id": "31409"
+    },
+    {
+      "type": "highlight",
+      "description": "`_claim` demonstrates `refundValue` in action: it grabs the accumulated amount, optionally nets off any `debt`, zeroes the slot (line 418) to defend against re-entrancy, then transfers the remainder to the operator’s withdrawal address.",
+      "file": "contracts/contract/megapool/RocketMegapoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 404,
+          "end": 419
+        }
+      ],
+      "title": "",
+      "id": "31410"
+    },
+    {
+      "type": "textOnly",
+      "description": "With every slot mapped and two real `read/write` examples under your belt, the delegate’s logic should now read like plain English.",
+      "title": "",
+      "id": "31411"
+    }
+  ]
+}

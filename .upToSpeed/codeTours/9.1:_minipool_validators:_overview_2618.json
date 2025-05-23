@@ -1,0 +1,169 @@
+{
+  "title": "9.1: Minipool Validators: Overview",
+  "id": "oHl7fQDX1BIOuLpQCLz3i0pe2EeuSm3DqO6GGg/+PpE=",
+  "originalId": 2618,
+  "position": 50,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "This tour gives a bird’s-eye orientation of the minipool component so later deep dives have context.  We will briefly meet each contract, focus on one identifying snippet, state its single-sentence role, and then connect them into the normal lifecycle.",
+      "title": "",
+      "id": "31221"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketMinipoolBase` – every minipool is a minimal proxy; it owns no business logic, only initialisation and upgrade wiring.",
+      "file": "contracts/contract/minipool/RocketMinipoolBase.sol",
+      "highlight": [
+        {
+          "start": 8,
+          "end": 14
+        }
+      ],
+      "title": "",
+      "id": "31222"
+    },
+    {
+      "type": "highlight",
+      "description": "The fallback shows why: any call that reaches a `minipool clone` is immediately `delegate-called` into whatever `delegate contract` this pool is configured to use.",
+      "file": "contracts/contract/minipool/RocketMinipoolBase.sol",
+      "highlight": [
+        {
+          "start": 113,
+          "end": 122
+        }
+      ],
+      "title": "",
+      "id": "31223"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketMinipoolDelegate` – shared, versioned implementation of all operational behaviour; pools execute it through delegatecall, making upgrades safe & opt-in per pool.",
+      "file": "contracts/contract/minipool/RocketMinipoolDelegate.sol",
+      "highlight": [
+        {
+          "start": 25,
+          "end": 31
+        }
+      ],
+      "title": "",
+      "id": "31224"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketMinipoolFactory` – deterministic CREATE2 deployer that clones `RocketMinipoolBase` using `OpenZeppelin Clones`.",
+      "file": "contracts/contract/minipool/RocketMinipoolFactory.sol",
+      "highlight": [
+        {
+          "start": 11,
+          "end": 18
+        }
+      ],
+      "title": "",
+      "id": "31225"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketMinipoolManager` – registry & counters; emits **creation/destruction events** and maintains per-node and network-wide statistics.",
+      "file": "contracts/contract/minipool/RocketMinipoolManager.sol",
+      "highlight": [
+        {
+          "start": 28,
+          "end": 36
+        }
+      ],
+      "title": "",
+      "id": "31226"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketMinipoolBondReducer` – helper that governs the optional \"reduce bond\" flow and lets trusted nodes veto reductions.",
+      "file": "contracts/contract/minipool/RocketMinipoolBondReducer.sol",
+      "highlight": [
+        {
+          "start": 17,
+          "end": 25
+        }
+      ],
+      "title": "",
+      "id": "31227"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketMinipoolPenalty` – lightweight, non-upgradable contract that caps how much the oDAO may penalise a pool.",
+      "file": "contracts/contract/minipool/RocketMinipoolPenalty.sol",
+      "highlight": [
+        {
+          "start": 12,
+          "end": 20
+        }
+      ],
+      "title": "",
+      "id": "31228"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketMinipoolQueue` – tracks which minipools are waiting for user deposits, with legacy (**Full**/**Half**) and modern **Variable** queues.",
+      "file": "contracts/contract/minipool/RocketMinipoolQueue.sol",
+      "highlight": [
+        {
+          "start": 15,
+          "end": 26
+        }
+      ],
+      "title": "",
+      "id": "31229"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketMinipoolStorageLayout` – frozen field order shared by Base and Delegate; guarantees upgrade-safe storage.",
+      "file": "contracts/contract/minipool/RocketMinipoolStorageLayout.sol",
+      "highlight": [
+        {
+          "start": 17,
+          "end": 25
+        }
+      ],
+      "title": "",
+      "id": "31230"
+    },
+    {
+      "type": "highlight",
+      "description": "`MinipoolDeposit` enum – encodes the five deposit style flavours used by queues and manager logic.",
+      "file": "contracts/types/MinipoolDeposit.sol",
+      "highlight": [
+        {
+          "start": 7,
+          "end": 13
+        }
+      ],
+      "title": "",
+      "id": "31231"
+    },
+    {
+      "type": "highlight",
+      "description": "`MinipoolStatus` enum – high-level state machine: `Initialised` → `Prelaunch` → `Staking` → `Dissolved`.",
+      "file": "contracts/types/MinipoolStatus.sol",
+      "highlight": [
+        {
+          "start": 7,
+          "end": 13
+        }
+      ],
+      "title": "",
+      "id": "31232"
+    },
+    {
+      "type": "textOnly",
+      "description": "Typical lifecycle:\n- `Factory.cloneDeterministic` deploys a new `RocketMinipoolBase` proxy for a node operator.\n- `Base.initialise` stores `RocketStorage` pointer, records its first Delegate, and returns.\n- All subsequent calls hit `Base`'s fallback and delegate into the shared `RocketMinipoolDelegate` logic, which emits operational events.\n- `Manager.createdMinipool` recorded the address, inserted it into index sets, and now updates counters as Delegate progresses through statuses.\n- `Queue`, `Penalty`, and `BondReducer` are consulted as the pool moves, but they never hold core state – they just adjust or record.\n**Result:** deterministic address, upgrade-safe proxy, central bookkeeping, and modular helpers.",
+      "title": "",
+      "id": "31233"
+    },
+    {
+      "type": "textOnly",
+      "description": "With these names, roles, and relationships in mind you now have the map needed to navigate any deeper code path inside the minipool system.",
+      "title": "",
+      "id": "31234"
+    }
+  ]
+}

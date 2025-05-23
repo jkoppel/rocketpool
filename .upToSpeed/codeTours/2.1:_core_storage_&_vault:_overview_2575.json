@@ -1,0 +1,138 @@
+{
+  "title": "2.1: Core Storage & Vault: Overview",
+  "id": "ViNpQBmDiCKaxcA7iKbRKWbv20MKFhnDqGfsT6tG72M=",
+  "originalId": 2575,
+  "position": 2,
+  "steps": [
+    {
+      "type": "highlight",
+      "description": "Everything the protocol records – contracts, balances, flags, metadata – ultimately lands in one of these seven typed mappings.  The shared `bytes32` key-space lets every module define its own namespace while keeping storage tightly packed.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 20,
+          "end": 28
+        }
+      ],
+      "title": "",
+      "id": "30751"
+    },
+    {
+      "type": "highlight",
+      "description": "Access to those mappings runs through one gatekeeper.  Before the guardian finalises deployment (`storageInit == false`) *or* afterwards (`storageInit == true`) the check differs, cleanly handing control from bootstrap → steady-state.",
+      "file": "contracts/contract/RocketStorage.sol",
+      "highlight": [
+        {
+          "start": 40,
+          "end": 53
+        }
+      ],
+      "title": "",
+      "id": "30752"
+    },
+    {
+      "type": "highlight",
+      "description": "Every functional module inherits `RocketBase`. Lines 18-21 hold an immutable pointer to the singleton `RocketStorage` contract, and the `constructor` at 96-100 injects that address so the reference can never be swapped out.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 18,
+          "end": 100
+        }
+      ],
+      "title": "",
+      "id": "30753"
+    },
+    {
+      "type": "highlight",
+      "description": "**Core modifiers** ask storage whether the caller is a recognised `contract` / `node` / `pool`. Each guard hashes a descriptive string (e.g. `\"contract.exists\"`) plus the caller and looks up the boolean flag, giving a registry-gated pattern that is easy to extend.",
+      "file": "contracts/contract/RocketBase.sol",
+      "highlight": [
+        {
+          "start": 24,
+          "end": 38
+        }
+      ],
+      "title": "",
+      "id": "30754"
+    },
+    {
+      "type": "highlight",
+      "description": "Actual assets live nowhere except the `vault`.  `ETH` balances are keyed by the owning contract name; `ERC-20` balances use the pair (`contract`, `token`) so upgrades to business logic can never accidentally touch funds.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 21,
+          "end": 24
+        }
+      ],
+      "title": "",
+      "id": "30755"
+    },
+    {
+      "type": "highlight",
+      "description": "A loud header comment plus the fixed `version = 1` assignment (lines 34-36) make it explicit that `RocketVault` itself must **never** be upgraded – its storage layout is the custody anchor for the whole network.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 12,
+          "end": 36
+        }
+      ],
+      "title": "",
+      "id": "30756"
+    },
+    {
+      "type": "highlight",
+      "description": "`depositEther` is the single choke-point where ETH enters the system. Once the caller passes the registry check the vault books the amount against that contract and emits an event; nothing else can mint balance.",
+      "file": "contracts/contract/RocketVault.sol",
+      "highlight": [
+        {
+          "start": 50,
+          "end": 61
+        }
+      ],
+      "title": "",
+      "id": "30757"
+    },
+    {
+      "type": "highlight",
+      "description": "The interface mirrors the seven mappings you saw earlier: grouped getters, setters, deleters, and small arithmetic helpers.  Anything in the network talks to storage exclusively through this surface.",
+      "file": "contracts/interface/RocketStorageInterface.sol",
+      "highlight": [
+        {
+          "start": 14,
+          "end": 40
+        }
+      ],
+      "title": "",
+      "id": "30758"
+    },
+    {
+      "type": "highlight",
+      "description": "Only eight functions make up the public funds API – `query`, `deposit`, `withdraw`, `move`, `burn` – intentionally minimal to keep the attack surface tiny.",
+      "file": "contracts/interface/RocketVaultInterface.sol",
+      "highlight": [
+        {
+          "start": 6,
+          "end": 14
+        }
+      ],
+      "title": "",
+      "id": "30759"
+    },
+    {
+      "type": "highlight",
+      "description": "Withdrawals are push-based: once the vault debits a balance it invokes this one-line callback on the recipient, sidestepping the 2300-gas `transfer` limit and keeping the withdrawal path isolated from user logic.",
+      "file": "contracts/interface/RocketVaultWithdrawerInterface.sol",
+      "highlight": [
+        {
+          "start": 5,
+          "end": 7
+        }
+      ],
+      "title": "",
+      "id": "30760"
+    }
+  ]
+}

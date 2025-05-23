@@ -1,0 +1,156 @@
+{
+  "title": "10.3: Proxy & Delegate Base Mechanics",
+  "id": "9EzGm5cgtwZEo9cKFDsezOoDOsPgUoZKCay7L55kkAk=",
+  "originalId": 2635,
+  "position": 67,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Every external interaction with a megapool first reaches `RocketMegapoolProxy`. The proxy owns all state while executing whatever implementation (delegate) it decides is appropriate. The next few steps follow that journey – `initialise` → `fallback` → `delegateUpgrade` → `setUseLatestDelegate` – then show how `getDelegateExpired` blocks outdated code and how the delegate itself can be marked for retirement.",
+      "title": "",
+      "id": "31436"
+    },
+    {
+      "type": "highlight",
+      "description": "`initialise` is invoked once by the factory. Lines 48-53 permanently pin the pool owner (`nodeAddress`) and snapshot the current network-wide delegate into `rocketMegapoolDelegate`. `storageState` flips to stop anyone calling the delegate directly.",
+      "file": "contracts/contract/megapool/RocketMegapoolProxy.sol",
+      "highlight": [
+        {
+          "start": 41,
+          "end": 54
+        }
+      ],
+      "title": "",
+      "id": "31437"
+    },
+    {
+      "type": "highlight",
+      "description": "fallback receives every unknown call. It chooses the implementation:\n- line 66 uses the latest global delegate when `useLatestDelegate` is true.\n- lines 69-70 keep using the stored delegate but only after `getDelegateExpired` confirms it has not timed-out.",
+      "file": "contracts/contract/megapool/RocketMegapoolProxy.sol",
+      "highlight": [
+        {
+          "start": 62,
+          "end": 71
+        }
+      ],
+      "title": "",
+      "id": "31438"
+    },
+    {
+      "type": "highlight",
+      "description": "After the choice, lines 73-75 ensure the address is a contract and perform `delegatecall`. The code runs in the **delegate** yet writes to the **proxy’s storage**, so each **megapool** keeps its own state even when the **implementation** changes.",
+      "file": "contracts/contract/megapool/RocketMegapoolProxy.sol",
+      "highlight": [
+        {
+          "start": 72,
+          "end": 80
+        }
+      ],
+      "title": "",
+      "id": "31439"
+    },
+    {
+      "type": "highlight",
+      "description": "`delegateUpgrade` lets the owner switch to the latest implementation on demand.  While the old delegate is still valid the call is restricted to the node or its withdrawal address (lines 85-88).  Line 92 rewires `rocketMegapoolDelegate` and an event records the hop.",
+      "file": "contracts/contract/megapool/RocketMegapoolProxy.sol",
+      "highlight": [
+        {
+          "start": 82,
+          "end": 96
+        }
+      ],
+      "title": "",
+      "id": "31440"
+    },
+    {
+      "type": "highlight",
+      "description": "`setUseLatestDelegate` toggles automatic upgrades. Only the owner may call it (**modifier** `onlyMegapoolOwner` on line 100). When turning the flag off lines 103-108 first upgrade so the newly-pinned delegate is at least current.",
+      "file": "contracts/contract/megapool/RocketMegapoolProxy.sol",
+      "highlight": [
+        {
+          "start": 98,
+          "end": 110
+        }
+      ],
+      "title": "",
+      "id": "31441"
+    },
+    {
+      "type": "highlight",
+      "description": "`getDelegateExpired` asks the stored delegate for its `expirationBlock` (line 130). A non-zero value that is now in the past forces fallback to revert, protecting nodes from executing retired code.",
+      "file": "contracts/contract/megapool/RocketMegapoolProxy.sol",
+      "highlight": [
+        {
+          "start": 127,
+          "end": 132
+        }
+      ],
+      "title": "",
+      "id": "31442"
+    },
+    {
+      "type": "textOnly",
+      "description": "The delegate contains the **self-destruct timer** and **shared access-control helpers**.",
+      "title": "",
+      "id": "31443"
+    },
+    {
+      "type": "highlight",
+      "description": "When a new delegate is deployed, it ensures a graceful transition period. The buffer provides node operators approximately 120 days to migrate to the new version, with the expiration mechanism designed to prevent malicious instant deprecation of delegates.",
+      "file": "contracts/contract/megapool/RocketMegapoolDelegateBase.sol",
+      "highlight": [
+        {
+          "start": 11,
+          "end": 30
+        }
+      ],
+      "title": "",
+      "id": "31444"
+    },
+    {
+      "type": "highlight",
+      "description": "`onlyMegapoolOwner` is the standard owner gate used throughout delegate logic. It relies on `isNodeCalling` for the actual check.",
+      "file": "contracts/contract/megapool/RocketMegapoolDelegateBase.sol",
+      "highlight": [
+        {
+          "start": 53,
+          "end": 57
+        }
+      ],
+      "title": "",
+      "id": "31445"
+    },
+    {
+      "type": "highlight",
+      "description": "`onlyLatestContract` and `onlyLatestNetworkContract` consult `RocketStorage` to guarantee privileged functions (like `deprecate`) can only be executed through the most up-to-date network contracts.",
+      "file": "contracts/contract/megapool/RocketMegapoolDelegateBase.sol",
+      "highlight": [
+        {
+          "start": 59,
+          "end": 69
+        }
+      ],
+      "title": "",
+      "id": "31446"
+    },
+    {
+      "type": "highlight",
+      "description": "`isNodeCalling` recognises both the node’s main address and its withdrawal address, so operators can manage their pools from either key.",
+      "file": "contracts/contract/megapool/RocketMegapoolDelegateBase.sol",
+      "highlight": [
+        {
+          "start": 84,
+          "end": 90
+        }
+      ],
+      "title": "",
+      "id": "31447"
+    },
+    {
+      "type": "textOnly",
+      "description": "Putting it together: every call hits the `proxy`, which forwards either to a pinned delegate or the newest one. Node operators can opt-in/out of automatic upgrades via `setUseLatestDelegate` or call `delegateUpgrade` manually. When the network ships a new delegate it invokes `deprecate` on the old version, starting a 120-day countdown; once expired, `getDelegateExpired` makes the `proxy` refuse to use it. This balances safety (no surprise upgrades), autonomy (pin if desired), and liveness (code cannot stay unmaintained indefinitely).",
+      "title": "",
+      "id": "31448"
+    }
+  ]
+}

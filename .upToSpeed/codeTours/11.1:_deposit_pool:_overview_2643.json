@@ -1,0 +1,137 @@
+{
+  "title": "11.1: Deposit Pool: Overview",
+  "id": "sPv3oWq1AGMnOr5Hk2uPq40tLTB5osTsg73ZZICG3Lg=",
+  "originalId": 2643,
+  "position": 75,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Let’s pin down the contract that receives **ETH** and decides where it ultimately flows.",
+      "title": "",
+      "id": "31557"
+    },
+    {
+      "type": "highlight",
+      "description": "The **SPDX notice** and **pragma** anchor us inside `RocketDepositPool.sol`.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 1,
+          "end": 3
+        }
+      ],
+      "title": "",
+      "id": "31558"
+    },
+    {
+      "type": "highlight",
+      "description": "Imports reveal its orchestrator role: it parks **ETH** in `RocketVault`, persists numbers in `RocketStorage`, and talks to `queue`, `token` and `settings` helpers.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 4,
+          "end": 20
+        }
+      ],
+      "title": "",
+      "id": "31559"
+    },
+    {
+      "type": "highlight",
+      "description": "The `interface` gives the flat, no-logic list of every public call – a quick map of the surface other modules touch.",
+      "file": "contracts/interface/deposit/RocketDepositPoolInterface.sol",
+      "highlight": [
+        {
+          "start": 1,
+          "end": 32
+        }
+      ],
+      "title": "",
+      "id": "31560"
+    },
+    {
+      "type": "highlight",
+      "description": "`deposit()`: user sends `ETH` → limits checked, fee taken, `rETH` minted, then internal processing kicks in.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 107,
+          "end": 115
+        }
+      ],
+      "title": "",
+      "id": "31561"
+    },
+    {
+      "type": "highlight",
+      "description": "`maybeAssignDeposits()`: gentle nudge that attempts assignments only when the **DAO toggle** allows.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 248,
+          "end": 255
+        }
+      ],
+      "title": "",
+      "id": "31562"
+    },
+    {
+      "type": "highlight",
+      "description": "`assignDeposits()`: **mandatory version** – reverts if assignments are disabled.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 259,
+          "end": 264
+        }
+      ],
+      "title": "",
+      "id": "31563"
+    },
+    {
+      "type": "highlight",
+      "description": "`requestFunds()`: a `Megapool` queues a validator-funding request, optionally spending an express ticket for priority.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 470,
+          "end": 477
+        }
+      ],
+      "title": "",
+      "id": "31564"
+    },
+    {
+      "type": "highlight",
+      "description": "`exitQueue()`: lets the same **Megapool** cancel its request and reclaim credit.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 522,
+          "end": 533
+        }
+      ],
+      "title": "",
+      "id": "31565"
+    },
+    {
+      "type": "highlight",
+      "description": "Near the tail lives a bundle of pure-view helpers (`getBalance`, `getExcessBalance`, `getQueueTop`, \u00133) turning the pool into a rich read-only data API.",
+      "file": "contracts/contract/deposit/RocketDepositPool.sol",
+      "highlight": [
+        {
+          "start": 581,
+          "end": 665
+        }
+      ],
+      "title": "",
+      "id": "31566"
+    },
+    {
+      "type": "textOnly",
+      "description": "You now know the two key files, their responsibilities, and where to dive when exploring deposit assignment logic versus read-only state.",
+      "title": "",
+      "id": "31567"
+    }
+  ]
+}

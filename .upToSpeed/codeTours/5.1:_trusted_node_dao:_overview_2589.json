@@ -1,0 +1,215 @@
+{
+  "title": "5.1: Trusted Node DAO: Overview",
+  "id": "+t/xtgzIWs1rCoIK5+kKcDE6C70jI9x1XYolRlfczww=",
+  "originalId": 2589,
+  "position": 21,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "We will map the `Solidity` pieces that together form **Rocket Pool’s Node-Trusted DAO**.  By the end you will know which contract owns which responsibility and how they collaborate.",
+      "title": "",
+      "id": "30948"
+    },
+    {
+      "type": "highlight",
+      "description": "**The façade** every other module calls. It defines the `DAO-wide storage namespace` and the `hard minimum member count`.",
+      "file": "contracts/contract/dao/node/RocketDAONodeTrusted.sol",
+      "highlight": [
+        {
+          "start": 22,
+          "end": 27
+        }
+      ],
+      "title": "",
+      "id": "30949"
+    },
+    {
+      "type": "highlight",
+      "description": "`RocketDAONodeTrustedActions` owns life-cycle entry-points such as joining and leaving, keeping the façade lean while still enforcing role checks.",
+      "file": "contracts/contract/dao/node/RocketDAONodeTrustedActions.sol",
+      "highlight": [
+        {
+          "start": 114,
+          "end": 138
+        }
+      ],
+      "title": "",
+      "id": "30950"
+    },
+    {
+      "type": "highlight",
+      "description": "**More life-cycle** logic lives here: this function lets a participant challenge a silent member.  Again, the façade is not involved.",
+      "file": "contracts/contract/dao/node/RocketDAONodeTrustedActions.sol",
+      "highlight": [
+        {
+          "start": 183,
+          "end": 199
+        }
+      ],
+      "title": "",
+      "id": "30951"
+    },
+    {
+      "type": "highlight",
+      "description": "Inside `RocketDAONodeTrustedProposals` the `onlyExecutingContracts` modifier restricts sensitive helpers to the façade or the proposal queue.",
+      "file": "contracts/contract/dao/node/RocketDAONodeTrustedProposals.sol",
+      "highlight": [
+        {
+          "start": 23,
+          "end": 30
+        }
+      ],
+      "title": "",
+      "id": "30952"
+    },
+    {
+      "type": "highlight",
+      "description": "propose bundles `calldata` and schedules it in the shared `RocketDAOProposal` queue, enforcing member cooldowns and quorum maths.",
+      "file": "contracts/contract/dao/node/RocketDAONodeTrustedProposals.sol",
+      "highlight": [
+        {
+          "start": 41,
+          "end": 56
+        }
+      ],
+      "title": "",
+      "id": "30953"
+    },
+    {
+      "type": "highlight",
+      "description": "vote and execute `wire member voting power` to the `queue`—once `quorum` is met anyone can trigger the `payload`.",
+      "file": "contracts/contract/dao/node/RocketDAONodeTrustedProposals.sol",
+      "highlight": [
+        {
+          "start": 58,
+          "end": 83
+        }
+      ],
+      "title": "",
+      "id": "30954"
+    },
+    {
+      "type": "highlight",
+      "description": "Upgrades funnel through a single dispatcher that pattern-matches the request and routes to internal helpers.",
+      "file": "contracts/contract/dao/node/RocketDAONodeTrustedUpgrade.sol",
+      "highlight": [
+        {
+          "start": 24,
+          "end": 34
+        }
+      ],
+      "title": "",
+      "id": "30955"
+    },
+    {
+      "type": "highlight",
+      "description": "Helper `_upgradeContract` replaces an implementation after safety checks; three siblings add a contract or adjust an **ABI** in the same guarded pattern.",
+      "file": "contracts/contract/dao/node/RocketDAONodeTrustedUpgrade.sol",
+      "highlight": [
+        {
+          "start": 40,
+          "end": 48
+        }
+      ],
+      "title": "",
+      "id": "30956"
+    },
+    {
+      "type": "highlight",
+      "description": "**All settings contracts** inherit this **abstract base** which names a `namespace` and guards mutations so only the `Proposals` contract may write after deployment.",
+      "file": "contracts/contract/dao/node/settings/RocketDAONodeTrustedSettings.sol",
+      "highlight": [
+        {
+          "start": 18,
+          "end": 31
+        }
+      ],
+      "title": "",
+      "id": "30957"
+    },
+    {
+      "type": "highlight",
+      "description": "**Members-specific settings** `constructor` seeds defaults such as `bond size`, `quorum` and `challenge windows`.",
+      "file": "contracts/contract/dao/node/settings/RocketDAONodeTrustedSettingsMembers.sol",
+      "highlight": [
+        {
+          "start": 17,
+          "end": 26
+        }
+      ],
+      "title": "",
+      "id": "30958"
+    },
+    {
+      "type": "highlight",
+      "description": "Readable `getters` expose those values without extra storage logic—everything is resolved by key.",
+      "file": "contracts/contract/dao/node/settings/RocketDAONodeTrustedSettingsMembers.sol",
+      "highlight": [
+        {
+          "start": 45,
+          "end": 52
+        }
+      ],
+      "title": "",
+      "id": "30959"
+    },
+    {
+      "type": "highlight",
+      "description": "Proposals settings follow the same pattern, initialising all the timing windows that control governance cadence.",
+      "file": "contracts/contract/dao/node/settings/RocketDAONodeTrustedSettingsProposals.sol",
+      "highlight": [
+        {
+          "start": 17,
+          "end": 25
+        }
+      ],
+      "title": "",
+      "id": "30960"
+    },
+    {
+      "type": "highlight",
+      "description": "A few short getters provide clean read-access such as `cooldown`, `vote`, and `execute windows`.",
+      "file": "contracts/contract/dao/node/settings/RocketDAONodeTrustedSettingsProposals.sol",
+      "highlight": [
+        {
+          "start": 32,
+          "end": 45
+        }
+      ],
+      "title": "",
+      "id": "30961"
+    },
+    {
+      "type": "highlight",
+      "description": "**Minipool settings constructor** shows yet another domain—different concerns, identical governance guardrails.",
+      "file": "contracts/contract/dao/node/settings/RocketDAONodeTrustedSettingsMinipool.sol",
+      "highlight": [
+        {
+          "start": 20,
+          "end": 31
+        }
+      ],
+      "title": "",
+      "id": "30962"
+    },
+    {
+      "type": "highlight",
+      "description": "Getters such as `getScrubPeriod` and `getScrubQuorum` surface these values to the broader protocol.",
+      "file": "contracts/contract/dao/node/settings/RocketDAONodeTrustedSettingsMinipool.sol",
+      "highlight": [
+        {
+          "start": 53,
+          "end": 70
+        }
+      ],
+      "title": "",
+      "id": "30963"
+    },
+    {
+      "type": "textOnly",
+      "description": "Happy path: a trusted node proposes, members vote until quorum, anyone executes, and the queued call reaches the target module (`Actions`, `Upgrade` or a `Settings` contract).  Each contract you’ve just seen owns one link in that chain.",
+      "title": "",
+      "id": "30964"
+    }
+  ]
+}

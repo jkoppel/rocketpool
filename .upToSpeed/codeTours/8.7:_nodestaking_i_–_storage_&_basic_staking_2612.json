@@ -1,0 +1,124 @@
+{
+  "title": "8.7: NodeStaking I – Storage & Basic Staking",
+  "id": "sgmrm4Z9qLO4ybmi2lixkiyZ8WPiU731jEuWhKu/5Vs=",
+  "originalId": 2612,
+  "position": 44,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Follow the path taken by an `RPL token` as it moves from a user’s `wallet` into protocol custody and finally into the accounting structures that track each node’s stake.",
+      "title": "",
+      "id": "31144"
+    },
+    {
+      "type": "highlight",
+      "description": "Three immutable variables are declared once and then reused everywhere:\n- `totalKey` / `totalMegapoolKey` are the keccak-hashed locations for the network-wide counters.\n- `rplToken` and `rocketVault` cache external contract addresses so later functions read them without extra storage loads.",
+      "file": "contracts/contract/node/RocketNodeStaking.sol",
+      "highlight": [
+        {
+          "start": 24,
+          "end": 29
+        }
+      ],
+      "title": "",
+      "id": "31145"
+    },
+    {
+      "type": "highlight",
+      "description": "The `constructor` derives the `keys` and fetches `contract addresses` only once.\nStoring them as `immutables` guarantees they cannot be accidentally changed and also saves gas for every subsequent read.",
+      "file": "contracts/contract/node/RocketNodeStaking.sol",
+      "highlight": [
+        {
+          "start": 59,
+          "end": 67
+        }
+      ],
+      "title": "",
+      "id": "31146"
+    },
+    {
+      "type": "highlight",
+      "description": "Two public entry points bring fresh RPL into the system:\n- `stakeRPL()` – the node calls directly.\n- `stakeRPLFor()` – an approved helper stakes on the node's behalf.\nAfter permission checks both routes converge on the private helper `_stakeRPLFor`.",
+      "file": "contracts/contract/node/RocketNodeStaking.sol",
+      "highlight": [
+        {
+          "start": 178,
+          "end": 197
+        }
+      ],
+      "title": "",
+      "id": "31147"
+    },
+    {
+      "type": "highlight",
+      "description": "`_stakeRPLFor` packs the core staking flow into three succinct lines:\n1. `transferRPLIn()` pulls tokens and deposits them in the vault.\n2. `increaseNodeRPLStake()` updates per-node and global totals.\n3. An event records the stake on-chain.",
+      "file": "contracts/contract/node/RocketNodeStaking.sol",
+      "highlight": [
+        {
+          "start": 199,
+          "end": 205
+        }
+      ],
+      "title": "",
+      "id": "31148"
+    },
+    {
+      "type": "highlight",
+      "description": "`transferRPLIn` performs the actual token movement.\n- **Line 570** moves RPL from the caller to this contract.\n- **Line 572** grants the vault allowance for the same amount.\n- **Line 574** deposits into `RocketVault` under the `rocketNodeStaking` bucket, handing custody to protocol treasury smart-contracts.",
+      "file": "contracts/contract/node/RocketNodeStaking.sol",
+      "highlight": [
+        {
+          "start": 568,
+          "end": 575
+        }
+      ],
+      "title": "",
+      "id": "31149"
+    },
+    {
+      "type": "highlight",
+      "description": "`increaseNodeRPLStake` handles accounting.\n- Reads the latest snapshot value (386-388) and migrates legacy balances if needed.\n- Pushes a new snapshot with the updated total (389).\n- Bumps the two global counters stored under `totalKey` and `totalMegapoolKey` (391-392).",
+      "file": "contracts/contract/node/RocketNodeStaking.sol",
+      "highlight": [
+        {
+          "start": 382,
+          "end": 393
+        }
+      ],
+      "title": "",
+      "id": "31150"
+    },
+    {
+      "type": "highlight",
+      "description": "`getTotalStakedRPL` is just a direct read of the `totalKey` counter increased a moment ago.",
+      "file": "contracts/contract/node/RocketNodeStaking.sol",
+      "highlight": [
+        {
+          "start": 69,
+          "end": 72
+        }
+      ],
+      "title": "",
+      "id": "31151"
+    },
+    {
+      "type": "highlight",
+      "description": "`getNodeStakedRPL` queries `RocketNetworkSnapshots` for the latest per-node value, giving any caller an authoritative view of that node’s combined legacy + megapool stake.",
+      "file": "contracts/contract/node/RocketNodeStaking.sol",
+      "highlight": [
+        {
+          "start": 84,
+          "end": 92
+        }
+      ],
+      "title": "",
+      "id": "31152"
+    },
+    {
+      "type": "textOnly",
+      "description": "In short: **staking** transfers tokens into the **protocol vault**, records the new balance in a **time-series snapshot**, and updates two **global aggregates**. Reading the totals later is simply a matter of loading those pre-computed keys or the latest snapshot value.",
+      "title": "",
+      "id": "31153"
+    }
+  ]
+}

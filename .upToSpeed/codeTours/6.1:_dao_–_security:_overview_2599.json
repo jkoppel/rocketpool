@@ -1,0 +1,137 @@
+{
+  "title": "6.1: DAO – Security: Overview",
+  "id": "tdBAXwc0OXu/OV2NHPRQMV+Yjrlq+0gLoSBnXaf0+/0=",
+  "originalId": 2599,
+  "position": 31,
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Security Council is Rocket Pool’s narrow, fast-acting `DAO`. It can tweak emergency protocol settings or manage its own membership while the wider `Protocol DAO` deliberates. This tour shows which `contracts` build it, how they share storage, and the lifecycle from invite to execution.",
+      "title": "",
+      "id": "31024"
+    },
+    {
+      "type": "highlight",
+      "description": "`dao/security` contains three runtime contracts. The snippet shows the **read-layer façade** (`RocketDAOSecurity`). `RocketDAOSecurityActions` (writes) and `RocketDAOSecurityProposals` (orchestration) sit alongside it, sharing the same versioned deployment.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurity.sol",
+      "highlight": [
+        {
+          "start": 10,
+          "end": 14
+        }
+      ],
+      "title": "",
+      "id": "31025"
+    },
+    {
+      "type": "highlight",
+      "description": "External modules never talk to the concrete contracts directly. Instead they import the matching interfaces under `interface/dao/security`; this one defines the **read-only surface**. The indirection keeps upgrades safe and keeps compile-time dependencies minimal.",
+      "file": "contracts/interface/dao/security/RocketDAOSecurityInterface.sol",
+      "highlight": [
+        {
+          "start": 4,
+          "end": 11
+        }
+      ],
+      "title": "",
+      "id": "31026"
+    },
+    {
+      "type": "highlight",
+      "description": "Every storage key these contracts touch starts with `dao.security.` (line 13). Using a dedicated prefix isolates council data in the global `RocketStorage`, preventing collisions with other DAOs.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurity.sol",
+      "highlight": [
+        {
+          "start": 13,
+          "end": 15
+        }
+      ],
+      "title": "",
+      "id": "31027"
+    },
+    {
+      "type": "highlight",
+      "description": "Quorum is calculated on demand: `currentMemberCount` × `protocolQuorumFraction`. When members join or leave, or the fraction is updated by the `Protocol DAO`, future proposals automatically inherit the new threshold.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurity.sol",
+      "highlight": [
+        {
+          "start": 20,
+          "end": 26
+        }
+      ],
+      "title": "",
+      "id": "31028"
+    },
+    {
+      "type": "highlight",
+      "description": "`Actions` leads with four crisp events – `Joined`, `Leave`, `RequestLeave`, `Kick` – giving indexers an effortless way to reconstruct membership history.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 19,
+          "end": 24
+        }
+      ],
+      "title": "",
+      "id": "31029"
+    },
+    {
+      "type": "highlight",
+      "description": "The `action*` family performs the membership state machine. Each function does minimal validation, then calls internal helpers that toggle `dao.security.*` flags and set timestamps. Notably, `join`/`leave` paths respect notice periods enforced by protocol settings.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityActions.sol",
+      "highlight": [
+        {
+          "start": 31,
+          "end": 68
+        }
+      ],
+      "title": "",
+      "id": "31030"
+    },
+    {
+      "type": "highlight",
+      "description": "**Proposals** adds two critical modifiers. `onlyExecutingContracts` lets either the **Protocol DAO** or the generic **Proposal engine** submit privileged calls; `onlySecurityMember` keeps the proposal & voting surface exclusive to council addresses.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityProposals.sol",
+      "highlight": [
+        {
+          "start": 27,
+          "end": 37
+        }
+      ],
+      "title": "",
+      "id": "31031"
+    },
+    {
+      "type": "highlight",
+      "description": "`propose()` doesn’t perform business logic. It packages the caller’s payload together with dynamic `voteTime`, `executeTime`, and `quorum` values, and registers it in `RocketDAOProposal` – the shared governance registry used across the project.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityProposals.sol",
+      "highlight": [
+        {
+          "start": 51,
+          "end": 61
+        }
+      ],
+      "title": "",
+      "id": "31032"
+    },
+    {
+      "type": "highlight",
+      "description": "Membership changes are enacted by lightweight payloads: `proposalInvite` timestamps an invitation; `proposalKick` and `proposalKickMulti` forward to the `Actions` contract, which performs the actual removal. Separation keeps governance and state mutation tidy.",
+      "file": "contracts/contract/dao/security/RocketDAOSecurityProposals.sol",
+      "highlight": [
+        {
+          "start": 144,
+          "end": 162
+        }
+      ],
+      "title": "",
+      "id": "31033"
+    },
+    {
+      "type": "textOnly",
+      "description": "**Flow recap:** `Proposals` schedules → members vote → DAO executes → `Actions` mutates `dao.security.*` keys → `Security` offers clean reads. When reading the code start with interfaces, then `Proposals` for orchestration, then `Actions` for writes, and finally `Security` for reads.",
+      "title": "",
+      "id": "31034"
+    }
+  ]
+}
